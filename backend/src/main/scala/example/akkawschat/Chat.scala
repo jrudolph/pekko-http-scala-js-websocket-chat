@@ -39,12 +39,13 @@ object Chat {
 
     new Chat {
       def messageSink(sender: String): Sink[String, Unit] =
+        // FIXME: here some rate-limiting should be applied to prevent single users flooding the stream
         Flow[String]
           .map(ChatMessage(sender, _))
           .to(Sink.actorRef(chatActor, ParticipantLeft(sender)))
 
       def messageSource(listenerName: String): Source[ChatMessage, Unit] =
-        // a source that will fail as soon as it isn't able to read messages fast enough
+        // a source that will fail as soon as it isn't able to push messages fast enough
         Source(Source.actorRef[ChatMessage](1, OverflowStrategy.fail)) { implicit b ⇒
           source ⇒
             import akka.stream.scaladsl.FlowGraph.Implicits._
