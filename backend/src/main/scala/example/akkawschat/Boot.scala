@@ -13,6 +13,8 @@ object Boot extends App {
 
   val binding = Http().bindAndHandle(service.route, "localhost", 8080)
   binding.onFailure {
-    case _ ⇒ system.shutdown()
+    case e ⇒
+      println(s"Binding failed with ${e.getMessage}")
+      system.shutdown()
   }
 }

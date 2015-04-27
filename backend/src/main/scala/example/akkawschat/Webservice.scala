@@ -4,6 +4,7 @@ import java.util.Date
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{ Message, TextMessage }
+import akka.stream.stage._
 
 import scala.concurrent.duration._
 
@@ -52,4 +53,16 @@ class Webservice(implicit fm: FlowMaterializer, system: ActorSystem) extends Dir
       .map {
         case ChatMessage(sender, message) ⇒ TextMessage.Strict(s"$sender: $message")
       }
+      .via(reportErrorsFlow)
+
+  def reportErrorsFlow[T]: Flow[T, T, Unit] =
+    Flow[T]
+      .transform(() ⇒ new PushStage[T, T] {
+        def onPush(elem: T, ctx: Context[T]): SyncDirective = ctx.push(elem)
+
+        override def onUpstreamFailure(cause: Throwable, ctx: Context[T]): TerminationDirective = {
+          println(s"WS stream failed with $cause")
+          super.onUpstreamFailure(cause, ctx)
+        }
+      })
 }
