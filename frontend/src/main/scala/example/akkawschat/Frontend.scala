@@ -21,7 +21,7 @@ object Frontend extends js.JSApp {
     joinButton.disabled = true
     val playground = dom.document.getElementById("playground")
     playground.innerHTML = s"Trying to join chat as '$name'..."
-    val chat = new WebSocket(s"ws://" + dom.document.location.host + s"/chat?name=$name")
+    val chat = new WebSocket(getWebsocketUri(dom.document, name))
     chat.onopen = { (event: Event) ⇒
       playground.insertBefore(p("Chat connection was successful!"), playground.firstChild)
       sendButton.disabled = false
@@ -48,6 +48,12 @@ object Frontend extends js.JSApp {
       joinButton.disabled = false
       sendButton.disabled = true
     }
+  }
+
+  def getWebsocketUri(document: Document, nameOfChatParticipant: String): String = {
+    val wsProtocol = if (dom.document.location.protocol == "https:") "wss" else "ws"
+
+    s"$wsProtocol://${dom.document.location.host}/chat?name=$nameOfChatParticipant"
   }
 
   def p(msg: String) = {
