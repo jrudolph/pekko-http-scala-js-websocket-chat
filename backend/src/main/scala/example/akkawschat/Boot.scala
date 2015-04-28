@@ -11,7 +11,7 @@ object Boot extends App {
 
   val service = new Webservice
 
-  val binding = Http().bindAndHandle(service.route, "localhost", 8080)
+  val binding = Http().bindAndHandle(service.route, "0.0.0.0", 8080)
   binding.onFailure {
     case e ⇒
       println(s"Binding failed with ${e.getMessage}")

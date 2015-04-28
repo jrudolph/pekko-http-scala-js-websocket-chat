@@ -21,7 +21,7 @@ object Frontend extends js.JSApp {
     joinButton.disabled = true
     val playground = dom.document.getElementById("playground")
     playground.innerHTML = s"Trying to join chat as '$name'..."
-    val chat = new WebSocket(s"ws://localhost:8080/chat?name=$name")
+    val chat = new WebSocket(s"ws://" + dom.document.location.host + s"/chat?name=$name")
     chat.onopen = { (event: Event) ⇒
       playground.insertBefore(p("Chat connection was successful!"), playground.firstChild)
       sendButton.disabled = false
