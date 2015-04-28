@@ -27,7 +27,6 @@ class Webservice(implicit fm: FlowMaterializer, system: ActorSystem) extends Dir
         // Scala-JS puts them in the route per default, so that's where we pick them up
         path("frontend-launcher.js")(getFromResource("frontend-launcher.js")) ~
         path("frontend-fastopt.js")(getFromResource("frontend-fastopt.js")) ~
-        path("clock")(handleWebsocketMessages(clockFlow)) ~
         path("chat") {
           parameter('name) { name ⇒
             handleWebsocketMessages(websocketChatFlow(sender = name))
@@ -36,24 +35,19 @@ class Webservice(implicit fm: FlowMaterializer, system: ActorSystem) extends Dir
     } ~
       getFromResourceDirectory("web")
 
-  def clockFlow: Flow[Message, Message, Unit] =
-    Flow.wrap(
-      Sink.ignore,
-      clockTickSource.map(TextMessage.Strict))((_, _) ⇒ ())
-
-  def clockTickSource: Source[String, Any] =
-    Source(1.second, 1.second, "tick").map(_ ⇒ s"Bling! The time is ${new Date().toString}.")
-
   def websocketChatFlow(sender: String): Flow[Message, Message, Unit] =
     Flow[Message]
       .collect {
-        case TextMessage.Strict(msg) ⇒ msg
+        case TextMessage.Strict(msg) ⇒ msg // unpack incoming WS text messages...
+        // This will lose (ignore) messages not received in one chunk (which is
+        // unlikely because chat messages are small) but absolutely possible
+        // FIXME: We need to handle TextMessage.Streamed as well.
       }
-      .via(theChat.chatFlow(sender))
+      .via(theChat.chatFlow(sender)) // ... and route them through the chatFlow ...
       .map {
-        case ChatMessage(sender, message) ⇒ TextMessage.Strict(s"$sender: $message")
+        case ChatMessage(sender, message) ⇒ TextMessage.Strict(s"$sender: $message") // ... pack outgoing messages into WS text messages ...
       }
-      .via(reportErrorsFlow)
+      .via(reportErrorsFlow) // ... then log any processing errors on stdin
 
   def reportErrorsFlow[T]: Flow[T, T, Unit] =
     Flow[T]

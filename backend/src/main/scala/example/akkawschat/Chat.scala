@@ -2,22 +2,21 @@ package example.akkawschat
 
 import akka.actor._
 import akka.stream.OverflowStrategy
-import akka.stream.scaladsl.{ Sink, Source, Flow }
+import akka.stream.scaladsl._
 
 case class ChatMessage(sender: String, message: String)
 
 trait Chat {
-  def chatFlow(sender: String): Flow[String, ChatMessage, Unit] =
-    Flow.wrap(messageSink(sender), messageSource(sender))((_, _) ⇒ ())
-
-  def messageSource(listenerName: String): Source[ChatMessage, Unit]
-  def messageSink(sender: String): Sink[String, Unit]
+  def chatFlow(sender: String): Flow[String, ChatMessage, Unit]
 
   def injectMessage(message: ChatMessage): Unit
 }
 
 object Chat {
   def create(system: ActorSystem): Chat = {
+    // The implementation uses a single actor per chat to collect and distribute
+    // chat messages. It would be nicer if this could be built by stream operations
+    // directly.
     val chatActor =
       system.actorOf(Props(new Actor {
         var subscribers = Set.empty[ActorRef]
@@ -27,40 +26,50 @@ object Chat {
             sendAdminMessage(s"$name joined!") // don't send to the subscriber until #17322 is fixed
             context.watch(subscriber)
             subscribers += subscriber
-          case msg: ChatMessage        ⇒ dispatch(msg)
+          case msg: ReceivedMessage    ⇒ dispatch(msg.toChatMessage)
           case ParticipantLeft(person) ⇒ sendAdminMessage(s"$person left!")
-          case NewParticipantComplete  ⇒ // expected but unavoidable (completion message cannot be switched off for Sink.actorRef)
           case Terminated(sub)         ⇒ subscribers -= sub // clean up dead subscribers
         }
-        def sendAdminMessage(msg: String): Unit =
-          dispatch(ChatMessage("admin", msg))
+        def sendAdminMessage(msg: String): Unit = dispatch(ChatMessage("admin", msg))
         def dispatch(msg: ChatMessage): Unit = subscribers.foreach(_ ! msg)
       }))
 
+    // Wraps the chatActor in a sink. When the stream to this sink will be completed
+    // it sends the `ParticipantLeft` message to the chatActor.
+    def chatInSink(sender: String) = Sink.actorRef[ChatEvent](chatActor, ParticipantLeft(sender))
+
+    // The counter-part which is a source that will create a target ActorRef per
+    // materialization where the chatActor will send its messages to.
+    val chatOutSource = Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
+
     new Chat {
-      def messageSink(sender: String): Sink[String, Unit] =
-        // FIXME: here some rate-limiting should be applied to prevent single users flooding the stream
-        Flow[String]
-          .map(ChatMessage(sender, _))
-          .to(Sink.actorRef(chatActor, ParticipantLeft(sender)))
-
-      def messageSource(listenerName: String): Source[ChatMessage, Unit] =
-        // a source that will fail as soon as it isn't able to push messages fast enough
-        Source(Source.actorRef[ChatMessage](1, OverflowStrategy.fail)) { implicit b ⇒
-          source ⇒
+      def chatFlow(sender: String): Flow[String, ChatMessage, Unit] =
+        Flow(chatInSink(sender), chatOutSource)(Keep.right) { implicit b ⇒
+          (chatActorIn, chatActorOut) ⇒
             import akka.stream.scaladsl.FlowGraph.Implicits._
+            val enveloper = b.add(Flow[String].map(ReceivedMessage(sender, _))) // put the message in an envelope
+            val merge = b.add(Merge[ChatEvent](2))
 
-            val s = b.add(Sink.actorRef[NewParticipant](chatActor, NewParticipantComplete))
-            b.matValue ~> Flow[ActorRef].map(NewParticipant(listenerName, _)) ~> s
+            // the main flow
+            enveloper ~> merge.in(0)
 
-            source.outlet
+            // a side branch of the graph that sends the ActorRef of the listening actor
+            // to the chatActor
+            b.matValue ~> Flow[ActorRef].map(NewParticipant(sender, _)) ~> merge.in(1)
+
+            // send the output of the merge to the chatActor
+            merge ~> chatActorIn
+
+            (enveloper.inlet, chatActorOut.outlet)
         }.mapMaterialized(_ ⇒ ())
-
-      def injectMessage(message: ChatMessage): Unit = chatActor ! message
+      def injectMessage(message: ChatMessage): Unit = chatActor ! message // non-streams interface
     }
   }
 
-  private case class NewParticipant(name: String, subscriber: ActorRef)
-  private case object NewParticipantComplete
-  private case class ParticipantLeft(name: String)
+  private sealed trait ChatEvent
+  private case class NewParticipant(name: String, subscriber: ActorRef) extends ChatEvent
+  private case class ParticipantLeft(name: String) extends ChatEvent
+  private case class ReceivedMessage(sender: String, message: String) extends ChatEvent {
+    def toChatMessage: ChatMessage = ChatMessage(sender, message)
+  }
 }
