@@ -36,10 +36,13 @@ object Chat {
 
     // Wraps the chatActor in a sink. When the stream to this sink will be completed
     // it sends the `ParticipantLeft` message to the chatActor.
+    // FIXME: here some rate-limiting should be applied to prevent single users flooding the chat
     def chatInSink(sender: String) = Sink.actorRef[ChatEvent](chatActor, ParticipantLeft(sender))
 
     // The counter-part which is a source that will create a target ActorRef per
     // materialization where the chatActor will send its messages to.
+    // This source will only buffer one element and will fail if the client doesn't read
+    // messages fast enough.
     val chatOutSource = Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
 
     new Chat {
