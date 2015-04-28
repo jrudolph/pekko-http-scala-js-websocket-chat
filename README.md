@@ -26,3 +26,7 @@ messages (and leave a note for the user) until the client catches up with the ac
 ### Usage of stream combinators
 
 Ideally, akka-stream would support dynamic merge/broadcast operations, so that you never need to break out of stream logic. Right now, collecting and broadcasting messages is done by the chat actor and for each user a manual stream pipeline needs to be setup.
+
+### The "frontend"
+
+There isn't more than absolutely necessary there right now.
