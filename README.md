@@ -14,6 +14,19 @@ sbt
 
 Navigate to [http://localhost:8080/](http://localhost:8080/)
 
+## Configuration
+
+You can set `app.interface` and `app.port` in `application.conf` to configure where the server
+should listen to.
+
+This also works on the command line, e.g. using `re-start`:
+
+```
+> re-start --- -Dapp.port=0.0.0.0
+```
+
+will start the server listening on all interfaces.
+
 ## Known issues
 
 ### Handling of backpressure
