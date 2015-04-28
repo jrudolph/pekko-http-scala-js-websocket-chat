@@ -9,9 +9,13 @@ object Boot extends App {
   import system.dispatcher
   implicit val materializer = ActorFlowMaterializer()
 
+  val config = system.settings.config
+  val interface = config.getString("app.interface")
+  val port = config.getInt("app.port")
+
   val service = new Webservice
 
-  val binding = Http().bindAndHandle(service.route, "0.0.0.0", 8080)
+  val binding = Http().bindAndHandle(service.route, interface, port)
   binding.onFailure {
     case e ⇒
       println(s"Binding failed with ${e.getMessage}")
