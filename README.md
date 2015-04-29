@@ -24,7 +24,7 @@ should listen to.
 This also works on the command line using JVM properties, e.g. using `re-start`:
 
 ```
-> re-start --- -Dapp.port=0.0.0.0
+> re-start --- -Dapp.interface=0.0.0.0 -Dapp.port=8080
 ```
 
 will start the server listening on all interfaces.
