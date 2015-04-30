@@ -15,6 +15,13 @@ object Frontend extends js.JSApp {
       joinChat(nameField.value)
       event.preventDefault()
     }
+    nameField.focus()
+    nameField.onkeypress = { (event: KeyboardEvent) ⇒
+      if (event.keyCode == 13) {
+        joinButton.click()
+        event.preventDefault()
+      }
+    }
   }
 
   def joinChat(name: String): Unit = {
@@ -27,9 +34,17 @@ object Frontend extends js.JSApp {
       sendButton.disabled = false
 
       val messageField = dom.document.getElementById("message").asInstanceOf[HTMLInputElement]
+      messageField.focus()
+      messageField.onkeypress = { (event: KeyboardEvent) ⇒
+        if (event.keyCode == 13) {
+          sendButton.click()
+          event.preventDefault()
+        }
+      }
       sendButton.onclick = { (event: Event) ⇒
         chat.send(messageField.value)
         messageField.value = ""
+        messageField.focus()
         event.preventDefault()
       }
 
