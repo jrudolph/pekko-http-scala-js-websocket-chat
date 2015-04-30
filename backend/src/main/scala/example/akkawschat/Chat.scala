@@ -23,9 +23,9 @@ object Chat {
 
         def receive: Receive = {
           case NewParticipant(name, subscriber) ⇒
-            sendAdminMessage(s"$name joined!") // don't send to the subscriber until #17322 is fixed
             context.watch(subscriber)
             subscribers += subscriber
+            sendAdminMessage(s"$name joined!")
           case msg: ReceivedMessage    ⇒ dispatch(msg.toChatMessage)
           case ParticipantLeft(person) ⇒ sendAdminMessage(s"$person left!")
           case Terminated(sub)         ⇒ subscribers -= sub // clean up dead subscribers
