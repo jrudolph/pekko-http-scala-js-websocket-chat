@@ -58,13 +58,13 @@ object Chat {
 
             // a side branch of the graph that sends the ActorRef of the listening actor
             // to the chatActor
-            b.matValue ~> Flow[ActorRef].map(NewParticipant(sender, _)) ~> merge.in(1)
+            b.materializedValue ~> Flow[ActorRef].map(NewParticipant(sender, _)) ~> merge.in(1)
 
             // send the output of the merge to the chatActor
             merge ~> chatActorIn
 
             (enveloper.inlet, chatActorOut.outlet)
-        }.mapMaterialized(_ ⇒ ())
+        }.mapMaterializedValue(_ ⇒ ())
       def injectMessage(message: ChatMessage): Unit = chatActor ! message // non-streams interface
     }
   }
