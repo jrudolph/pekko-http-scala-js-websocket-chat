@@ -9,10 +9,10 @@ import akka.stream.stage._
 import scala.concurrent.duration._
 
 import akka.http.scaladsl.server.Directives
-import akka.stream.FlowMaterializer
-import akka.stream.scaladsl.{ Sink, Source, Flow }
+import akka.stream.Materializer
+import akka.stream.scaladsl.Flow
 
-class Webservice(implicit fm: FlowMaterializer, system: ActorSystem) extends Directives {
+class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
   val theChat = Chat.create(system)
   import system.dispatcher
   system.scheduler.schedule(15.second, 15.second) {
