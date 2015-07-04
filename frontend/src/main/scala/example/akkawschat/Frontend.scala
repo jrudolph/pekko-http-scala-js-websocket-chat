@@ -5,6 +5,11 @@ import org.scalajs.dom.raw._
 import scala.scalajs.js
 import org.scalajs.dom
 
+import upickle._
+
+// TODO - Definition should move to a separate shared sub-project between client and server. 
+case class ChatMessage(sender: String, message: String)
+
 object Frontend extends js.JSApp {
   val joinButton = dom.document.getElementById("join").asInstanceOf[HTMLButtonElement]
   val sendButton = dom.document.getElementById("send").asInstanceOf[HTMLButtonElement]
@@ -56,7 +61,8 @@ object Frontend extends js.JSApp {
       sendButton.disabled = true
     }
     chat.onmessage = { (event: MessageEvent) ⇒
-      playground.insertBefore(p(event.data.toString), playground.firstChild)
+      val wsMsg = read[ChatMessage](event.data.toString)
+      playground.insertBefore(p(s"${wsMsg.sender} said: ${wsMsg.message}"), playground.firstChild)
     }
     chat.onclose = { (event: Event) ⇒
       playground.insertBefore(p("Connection to chat lost. You can try to rejoin manually."), playground.firstChild)
