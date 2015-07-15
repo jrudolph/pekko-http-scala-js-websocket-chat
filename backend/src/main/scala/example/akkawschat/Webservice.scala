@@ -12,6 +12,8 @@ import akka.http.scaladsl.server.Directives
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
+import upickle._
+
 class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
   val theChat = Chat.create(system)
   import system.dispatcher
@@ -46,7 +48,9 @@ class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directi
       }
       .via(theChat.chatFlow(sender)) // ... and route them through the chatFlow ...
       .map {
-        case ChatMessage(sender, message) ⇒ TextMessage.Strict(s"$sender: $message") // ... pack outgoing messages into WS text messages ...
+        case c @ ChatMessage(sender, message) ⇒ {
+          TextMessage.Strict(write(c)) // ... pack outgoing messages into WS JSON messages ...
+        }
       }
       .via(reportErrorsFlow) // ... then log any processing errors on stdin
 

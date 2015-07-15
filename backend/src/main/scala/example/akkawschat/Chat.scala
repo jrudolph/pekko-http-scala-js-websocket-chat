@@ -39,32 +39,23 @@ object Chat {
     // FIXME: here some rate-limiting should be applied to prevent single users flooding the chat
     def chatInSink(sender: String) = Sink.actorRef[ChatEvent](chatActor, ParticipantLeft(sender))
 
-    // The counter-part which is a source that will create a target ActorRef per
-    // materialization where the chatActor will send its messages to.
-    // This source will only buffer one element and will fail if the client doesn't read
-    // messages fast enough.
-    val chatOutSource = Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
-
     new Chat {
-      def chatFlow(sender: String): Flow[String, ChatMessage, Unit] =
-        Flow(chatInSink(sender), chatOutSource)(Keep.right) { implicit b ⇒
-          (chatActorIn, chatActorOut) ⇒
-            import akka.stream.scaladsl.FlowGraph.Implicits._
-            val enveloper = b.add(Flow[String].map(ReceivedMessage(sender, _))) // put the message in an envelope
-            val merge = b.add(Merge[ChatEvent](2))
+      def chatFlow(sender: String): Flow[String, ChatMessage, Unit] = {
+        val in =
+          Flow[String]
+            .map(ReceivedMessage(sender, _))
+            .to(chatInSink(sender))
 
-            // the main flow
-            enveloper ~> merge.in(0)
+        // The counter-part which is a source that will create a target ActorRef per
+        // materialization where the chatActor will send its messages to.
+        // This source will only buffer one element and will fail if the client doesn't read
+        // messages fast enough.
+        val out =
+          Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
+            .mapMaterializedValue(chatActor ! NewParticipant(sender, _))
 
-            // a side branch of the graph that sends the ActorRef of the listening actor
-            // to the chatActor
-            b.materializedValue ~> Flow[ActorRef].map(NewParticipant(sender, _)) ~> merge.in(1)
-
-            // send the output of the merge to the chatActor
-            merge ~> chatActorIn
-
-            (enveloper.inlet, chatActorOut.outlet)
-        }.mapMaterializedValue(_ ⇒ ())
+        Flow.wrap(in, out)(Keep.none)
+      }
       def injectMessage(message: ChatMessage): Unit = chatActor ! message // non-streams interface
     }
   }

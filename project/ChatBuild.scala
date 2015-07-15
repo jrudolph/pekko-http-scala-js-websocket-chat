@@ -23,6 +23,7 @@ object ChatBuild extends Build {
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
           "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+          "com.lihaoyi" %%% "upickle" % "0.2.8",
           "com.lihaoyi" %%% "utest" % "0.3.0" % "test"
         )
       )
@@ -35,7 +36,8 @@ object ChatBuild extends Build {
       .settings(
         libraryDependencies ++= Seq(
           "com.typesafe.akka" %% "akka-http-experimental" % "1.0-RC4",
-          "org.specs2" %% "specs2" % "2.3.12" % "test"
+          "org.specs2" %% "specs2" % "2.3.12" % "test",
+          "com.lihaoyi" %% "upickle" % "0.2.8"
         ),
         (resourceGenerators in Compile) <+=
           (fastOptJS in Compile in frontend, packageScalaJSLauncher in Compile in frontend)
