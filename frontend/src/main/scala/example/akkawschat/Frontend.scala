@@ -6,9 +6,7 @@ import scala.scalajs.js
 import org.scalajs.dom
 
 import upickle._
-
-// TODO - Definition should move to a separate shared sub-project between client and server. 
-case class ChatMessage(sender: String, message: String)
+import shared.Protocol._
 
 object Frontend extends js.JSApp {
   val joinButton = dom.document.getElementById("join").asInstanceOf[HTMLButtonElement]

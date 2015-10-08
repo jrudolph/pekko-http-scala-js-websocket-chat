@@ -27,6 +27,7 @@ object ChatBuild extends Build {
           "com.lihaoyi" %%% "utest" % "0.3.0" % "test"
         )
       )
+      .dependsOn(sharedJs)
 
   // Akka Http based backend
   lazy val backend =
@@ -44,8 +45,20 @@ object ChatBuild extends Build {
             .map((f1, f2) => Seq(f1.data, f2.data)),
         watchSources <++= (watchSources in frontend)
       )
+      .dependsOn(sharedJvm)
+
+  lazy val shared = (crossProject.crossType(CrossType.Pure) in file ("shared")).
+    settings(
+      scalaVersion:=scalaV,
+      libraryDependencies +="org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+    )
+
+  lazy val sharedJvm= shared.jvm
+  lazy val sharedJs= shared.js
+
+  lazy val scalaV = "2.11.6"
 
   def commonSettings = Seq(
-    scalaVersion := "2.11.6"
+    scalaVersion := scalaV
   ) ++ ScalariformSupport.formatSettings
 }
