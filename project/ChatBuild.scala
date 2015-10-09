@@ -55,7 +55,7 @@ object ChatBuild extends Build {
   lazy val sharedJvm= shared.jvm
   lazy val sharedJs= shared.js
 
-  lazy val scalaV = "2.11.6"
+  lazy val scalaV = "2.11.7"
 
   def commonSettings = Seq(
     scalaVersion := scalaV
