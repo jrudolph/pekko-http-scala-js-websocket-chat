@@ -3,8 +3,7 @@ package example.akkawschat
 import akka.actor._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
-
-case class ChatMessage(sender: String, message: String)
+import shared.Protocol._
 
 trait Chat {
   def chatFlow(sender: String): Flow[String, ChatMessage, Unit]

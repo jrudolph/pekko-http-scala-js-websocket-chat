@@ -13,6 +13,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
 import upickle._
+import shared.Protocol._
 
 class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
   val theChat = Chat.create(system)
