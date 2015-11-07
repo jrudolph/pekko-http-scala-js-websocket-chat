@@ -53,7 +53,7 @@ object Chat {
           Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
             .mapMaterializedValue(chatActor ! NewParticipant(sender, _))
 
-        Flow.wrap(in, out)(Keep.none)
+        Flow.fromSinkAndSource(in, out)
       }
       def injectMessage(message: ChatMessage): Unit = chatActor ! message // non-streams interface
     }

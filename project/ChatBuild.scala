@@ -36,7 +36,7 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-experimental" % "1.0",
+          "com.typesafe.akka" %% "akka-http-experimental" % "2.0-M1",
           "org.specs2" %% "specs2" % "2.3.12" % "test",
           "com.lihaoyi" %% "upickle" % "0.2.8"
         ),
