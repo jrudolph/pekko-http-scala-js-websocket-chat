@@ -22,7 +22,7 @@ object ChatBuild extends Build {
         persistLauncher in Test := false,
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
-          "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+          "org.scala-js" %%% "scalajs-dom" % "0.8.2",
           "com.lihaoyi" %%% "upickle" % "0.2.8",
           "com.lihaoyi" %%% "utest" % "0.3.0" % "test"
         )
@@ -36,7 +36,7 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-experimental" % "2.0-M1",
+          "com.typesafe.akka" %% "akka-http-experimental" % "2.0-M2",
           "org.specs2" %% "specs2" % "2.3.12" % "test",
           "com.lihaoyi" %% "upickle" % "0.2.8"
         ),
