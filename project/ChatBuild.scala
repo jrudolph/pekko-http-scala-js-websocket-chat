@@ -10,7 +10,7 @@ import spray.revolver.RevolverPlugin._
 object ChatBuild extends Build {
   lazy val root =
     Project("root", file("."))
-      .aggregate(frontend, backend)
+      .aggregate(frontend, backend, cli)
 
   // Scala-Js frontend
   lazy val frontend =
@@ -44,6 +44,19 @@ object ChatBuild extends Build {
           (fastOptJS in Compile in frontend, packageScalaJSLauncher in Compile in frontend)
             .map((f1, f2) => Seq(f1.data, f2.data)),
         watchSources <++= (watchSources in frontend)
+      )
+      .dependsOn(sharedJvm)
+
+  lazy val cli =
+    Project("cli", file("cli"))
+      .settings(Revolver.settings: _*)
+      .settings(commonSettings: _*)
+      .settings(
+        libraryDependencies ++= Seq(
+          "com.typesafe.akka" %% "akka-http-experimental" % "2.0-M2",
+          "org.specs2" %% "specs2" % "2.3.12" % "test",
+          "com.lihaoyi" %% "upickle" % "0.2.8"
+        )
       )
       .dependsOn(sharedJvm)
 
