@@ -34,7 +34,7 @@ will start the server listening on all interfaces.
 The `cli` project contains a command line client for the chat to demonstrate the Websocket client and
 how to deal with console input in a streaming way.
 
-[![asciicast](https://asciinema.org/a/c1db91gt8pghx9gcut469kfd7.png)](https://asciinema.org/a/c1db91gt8pghx9gcut469kfd7)
+![CLI Screencast](https://github.com/jrudolph/akka-http-scala-js-websocket-chat/raw/master/docs/cli-screencast.gif)
 
 It runs best directly from a terminal.
 
