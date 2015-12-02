@@ -34,7 +34,6 @@ object CLI extends App {
         override def onUpstreamFinish(ctx: Context[String]): TerminationDirective = {
           println("\nFinishing...")
           system.shutdown()
-          Prompt.saneStty()
           super.onUpstreamFinish(ctx)
         }
       })
