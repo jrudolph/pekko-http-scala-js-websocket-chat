@@ -53,6 +53,16 @@ Run
 java -jar cli/target/scala-2.11/cli-assembly-0.1-SNAPSHOT.jar
 ```
 
+or 
+
+```
+./chat
+```
+
+Here's another screencast that shows live tab completion in action:
+
+![CLI completion screencast](https://github.com/jrudolph/akka-http-scala-js-websocket-chat/raw/master/docs/cli-completion.gif)
+
 ## Known issues
 
 ### Handling of backpressure
