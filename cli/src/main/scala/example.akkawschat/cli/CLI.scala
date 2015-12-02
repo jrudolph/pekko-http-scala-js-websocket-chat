@@ -13,8 +13,14 @@ import shared.Protocol.ChatMessage
 import scala.util.control.NonFatal
 
 object CLI extends App {
-  val name = "Jane Doe"
+  def promptForName(): String = {
+    Console.out.print("What's your name? ")
+    Console.out.flush()
+    Console.in.readLine()
+  }
+
   val endpointBase = "ws://localhost:8080/chat"
+  val name = promptForName()
 
   val endpoint = Uri(endpointBase).withQuery(Uri.Query("name" -> name))
 
@@ -38,6 +44,7 @@ object CLI extends App {
         }
       })
 
+  println("Connecting... (Use Ctrl-D to exit.)")
   ChatClient.connect(endpoint, appFlow)
     .onFailure {
       case NonFatal(e) ⇒
