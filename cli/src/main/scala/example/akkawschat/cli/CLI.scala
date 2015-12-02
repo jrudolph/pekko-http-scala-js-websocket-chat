@@ -8,7 +8,7 @@ import akka.stream.scaladsl.Flow
 import akka.http.scaladsl.model.Uri
 import akka.stream.stage.{ TerminationDirective, SyncDirective, Context, PushStage }
 
-import shared.Protocol.ChatMessage
+import shared.Protocol
 
 import scala.util.control.NonFatal
 
@@ -29,9 +29,16 @@ object CLI extends App {
   implicit val materializer = ActorMaterializer()
 
   import Console._
+  def formatCurrentMembers(members: Seq[String]): String =
+    s"(${members.size} people chatting: ${members.map(m ⇒ s"$YELLOW$m$RESET").mkString(", ")})"
+
   val appFlow =
-    Flow[ChatMessage]
-      .map(msg ⇒ s"$YELLOW${msg.sender}$RESET: ${msg.message}")
+    Flow[Protocol.Message]
+      .map {
+        case Protocol.ChatMessage(sender, message) ⇒ s"$YELLOW$sender$RESET: $message"
+        case Protocol.Joined(member, all)          ⇒ s"$YELLOW$member$RESET ${GREEN}joined!$RESET ${formatCurrentMembers(all)}"
+        case Protocol.Left(member, all)            ⇒ s"$YELLOW$member$RESET ${RED}left!$RESET ${formatCurrentMembers(all)}"
+      }
       .via(Prompt.prompt)
       .filterNot(_.trim.isEmpty)
       .transform(() ⇒ new PushStage[String, String] {

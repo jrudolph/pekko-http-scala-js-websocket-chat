@@ -6,7 +6,7 @@ import scala.scalajs.js
 import org.scalajs.dom
 
 import upickle._
-import shared.Protocol._
+import shared.Protocol
 
 object Frontend extends js.JSApp {
   val joinButton = dom.document.getElementById("join").asInstanceOf[HTMLButtonElement]
@@ -59,14 +59,22 @@ object Frontend extends js.JSApp {
       sendButton.disabled = true
     }
     chat.onmessage = { (event: MessageEvent) ⇒
-      val wsMsg = read[ChatMessage](event.data.toString)
-      playground.insertBefore(p(s"${wsMsg.sender} said: ${wsMsg.message}"), playground.firstChild)
+      val wsMsg = read[Protocol.Message](event.data.toString)
+
+      wsMsg match {
+        case Protocol.ChatMessage(sender, message) ⇒ writeToArea(s"$sender said: $message")
+        case Protocol.Joined(member, _)            ⇒ writeToArea(s"$member joined!")
+        case Protocol.Left(member, _)              ⇒ writeToArea(s"$member left!")
+      }
     }
     chat.onclose = { (event: Event) ⇒
       playground.insertBefore(p("Connection to chat lost. You can try to rejoin manually."), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true
     }
+
+    def writeToArea(text: String): Unit =
+      playground.insertBefore(p(text), playground.firstChild)
   }
 
   def getWebsocketUri(document: Document, nameOfChatParticipant: String): String = {

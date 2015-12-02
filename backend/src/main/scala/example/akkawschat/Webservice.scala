@@ -13,6 +13,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
 import upickle._
+import shared.Protocol
 import shared.Protocol._
 
 class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
@@ -49,9 +50,8 @@ class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directi
       }
       .via(theChat.chatFlow(sender)) // ... and route them through the chatFlow ...
       .map {
-        case c @ ChatMessage(sender, message) ⇒ {
-          TextMessage.Strict(write(c)) // ... pack outgoing messages into WS JSON messages ...
-        }
+        case msg: Protocol.Message ⇒
+          TextMessage.Strict(write(msg)) // ... pack outgoing messages into WS JSON messages ...
       }
       .via(reportErrorsFlow) // ... then log any processing errors on stdin
 

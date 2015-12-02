@@ -3,12 +3,12 @@ package example.akkawschat
 import akka.actor._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
-import shared.Protocol._
+import shared.Protocol
 
 trait Chat {
-  def chatFlow(sender: String): Flow[String, ChatMessage, Unit]
+  def chatFlow(sender: String): Flow[String, Protocol.Message, Unit]
 
-  def injectMessage(message: ChatMessage): Unit
+  def injectMessage(message: Protocol.ChatMessage): Unit
 }
 
 object Chat {
@@ -18,19 +18,24 @@ object Chat {
     // directly.
     val chatActor =
       system.actorOf(Props(new Actor {
-        var subscribers = Set.empty[ActorRef]
+        var subscribers = Set.empty[(String, ActorRef)]
 
         def receive: Receive = {
           case NewParticipant(name, subscriber) ⇒
             context.watch(subscriber)
-            subscribers += subscriber
-            sendAdminMessage(s"$name joined!")
-          case msg: ReceivedMessage    ⇒ dispatch(msg.toChatMessage)
-          case ParticipantLeft(person) ⇒ sendAdminMessage(s"$person left!")
-          case Terminated(sub)         ⇒ subscribers -= sub // clean up dead subscribers
+            subscribers += (name -> subscriber)
+            dispatch(Protocol.Joined(name, members))
+          case msg: ReceivedMessage ⇒ dispatch(msg.toChatMessage)
+          case ParticipantLeft(person) ⇒
+            subscribers = subscribers.filterNot(_._1 == person)
+            dispatch(Protocol.Left(person, members))
+          case Terminated(sub) ⇒
+            // clean up dead subscribers, but should have been removed when `ParticipantLeft`
+            subscribers = subscribers.filterNot(_._2 == sub)
         }
-        def sendAdminMessage(msg: String): Unit = dispatch(ChatMessage("admin", msg))
-        def dispatch(msg: ChatMessage): Unit = subscribers.foreach(_ ! msg)
+        def sendAdminMessage(msg: String): Unit = dispatch(Protocol.ChatMessage("admin", msg))
+        def dispatch(msg: Protocol.Message): Unit = subscribers.foreach(_._2 ! msg)
+        def members = subscribers.map(_._1).toSeq
       }))
 
     // Wraps the chatActor in a sink. When the stream to this sink will be completed
@@ -39,7 +44,7 @@ object Chat {
     def chatInSink(sender: String) = Sink.actorRef[ChatEvent](chatActor, ParticipantLeft(sender))
 
     new Chat {
-      def chatFlow(sender: String): Flow[String, ChatMessage, Unit] = {
+      def chatFlow(sender: String): Flow[String, Protocol.ChatMessage, Unit] = {
         val in =
           Flow[String]
             .map(ReceivedMessage(sender, _))
@@ -50,12 +55,12 @@ object Chat {
         // This source will only buffer one element and will fail if the client doesn't read
         // messages fast enough.
         val out =
-          Source.actorRef[ChatMessage](1, OverflowStrategy.fail)
+          Source.actorRef[Protocol.ChatMessage](1, OverflowStrategy.fail)
             .mapMaterializedValue(chatActor ! NewParticipant(sender, _))
 
         Flow.fromSinkAndSource(in, out)
       }
-      def injectMessage(message: ChatMessage): Unit = chatActor ! message // non-streams interface
+      def injectMessage(message: Protocol.ChatMessage): Unit = chatActor ! message // non-streams interface
     }
   }
 
@@ -63,6 +68,6 @@ object Chat {
   private case class NewParticipant(name: String, subscriber: ActorRef) extends ChatEvent
   private case class ParticipantLeft(name: String) extends ChatEvent
   private case class ReceivedMessage(sender: String, message: String) extends ChatEvent {
-    def toChatMessage: ChatMessage = ChatMessage(sender, message)
+    def toChatMessage: Protocol.ChatMessage = Protocol.ChatMessage(sender, message)
   }
 }
