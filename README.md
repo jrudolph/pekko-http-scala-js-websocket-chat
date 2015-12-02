@@ -29,6 +29,30 @@ This also works on the command line using JVM properties, e.g. using `re-start`:
 
 will start the server listening on all interfaces.
 
+## CLI
+
+The `cli` project contains a command line client for the chat to demonstrate the Websocket client and
+how to deal with console input in a streaming way.
+
+[![asciicast](https://asciinema.org/a/c1db91gt8pghx9gcut469kfd7.png)](https://asciinema.org/a/c1db91gt8pghx9gcut469kfd7)
+
+It runs best directly from a terminal.
+
+Start the server as explained above. Then, to build a fat jar use
+
+```
+sbt
+
+> project cli
+> assembly
+```
+
+Run
+
+```
+java -jar cli/target/scala-2.11/cli-assembly-0.1-SNAPSHOT.jar
+```
+
 ## Known issues
 
 ### Handling of backpressure
