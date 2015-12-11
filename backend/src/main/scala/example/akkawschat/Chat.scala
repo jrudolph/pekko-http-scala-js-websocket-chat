@@ -26,6 +26,7 @@ object Chat {
             subscribers += (name -> subscriber)
             dispatch(Protocol.Joined(name, members))
           case msg: ReceivedMessage ⇒ dispatch(msg.toChatMessage)
+          case msg: Protocol.ChatMessage => dispatch(msg)
           case ParticipantLeft(person) ⇒
             subscribers = subscribers.filterNot(_._1 == person)
             dispatch(Protocol.Left(person, members))
