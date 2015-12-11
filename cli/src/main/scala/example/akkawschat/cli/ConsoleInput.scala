@@ -25,7 +25,7 @@ class ConsoleInput(implicit ec: ExecutionContext) extends GraphStage[SourceShape
             else if (System.in.available() > 0)
               callback.invoke(System.in.read().toChar)
             else {
-              Thread.sleep(0)
+              Thread.sleep(10)
               read()
             }
 
