@@ -3,7 +3,7 @@ package example.akkawschat.cli
 import scala.collection.immutable
 
 import akka.stream._
-import akka.stream.scaladsl.{ Flow, Source, FlowGraph }
+import akka.stream.scaladsl.{ Flow, Source, GraphDSL }
 import akka.stream.stage.{ InHandler, GraphStageLogic, GraphStage }
 
 import scala.concurrent.ExecutionContext
@@ -17,8 +17,8 @@ object Prompt {
     val characters = Source.fromGraph(new ConsoleInput)
 
     val graph =
-      FlowGraph.create() { implicit b ⇒
-        import FlowGraph.Implicits._
+      GraphDSL.create() { implicit b ⇒
+        import GraphDSL.Implicits._
 
         val prompt = b.add(PromptFlow)
         characters ~> prompt.characterInput

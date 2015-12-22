@@ -1,12 +1,12 @@
 package example.akkawschat.cli
 
 import akka.stream.FlowShape
-import akka.stream.scaladsl.{ Concat, FlowGraph, Flow, Source }
+import akka.stream.scaladsl.{ Concat, Flow, GraphDSL, Source }
 
 object Util {
   def inject[U](source: Source[U, Unit]): Flow[U, U, Unit] =
-    Flow.fromGraph(FlowGraph.create() { implicit b ⇒
-      import FlowGraph.Implicits._
+    Flow.fromGraph(GraphDSL.create() { implicit b ⇒
+      import GraphDSL.Implicits._
 
       val concat = b.add(new Concat[U](2))
 
