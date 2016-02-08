@@ -28,7 +28,11 @@ object Chat {
           case msg: ReceivedMessage      ⇒ dispatch(msg.toChatMessage)
           case msg: Protocol.ChatMessage ⇒ dispatch(msg)
           case ParticipantLeft(person) ⇒
-            subscribers = subscribers.filterNot(_._1 == person)
+            val entry @ (name, ref) = subscribers.find(_._1 == person).get
+            // report downstream of completion, otherwise, there's a risk of leaking the
+            // downstream when the TCP connection is only half-closed
+            ref ! Status.Success(Unit)
+            subscribers -= entry
             dispatch(Protocol.Left(person, members))
           case Terminated(sub) ⇒
             // clean up dead subscribers, but should have been removed when `ParticipantLeft`
