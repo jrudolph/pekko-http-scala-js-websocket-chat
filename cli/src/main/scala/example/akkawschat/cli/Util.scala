@@ -4,7 +4,7 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{ Concat, Flow, GraphDSL, Source }
 
 object Util {
-  def inject[U](source: Source[U, Unit]): Flow[U, U, Unit] =
+  def inject[U](source: Source[U, Any]): Flow[U, U, Any] =
     Flow.fromGraph(GraphDSL.create() { implicit b ⇒
       import GraphDSL.Implicits._
 

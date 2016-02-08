@@ -13,7 +13,7 @@ object Prompt {
    * A flow that prompts for lines from the tty and allows to output lines at the same time, without
    * disrupting user input
    */
-  def prompt(implicit ec: ExecutionContext): Flow[String, String, Unit] = {
+  def prompt(implicit ec: ExecutionContext): Flow[String, String, Any] = {
     val characters = Source.fromGraph(new ConsoleInput)
 
     val graph =

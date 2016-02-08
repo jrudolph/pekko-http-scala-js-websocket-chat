@@ -34,13 +34,13 @@ class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directi
         path("frontend-fastopt.js")(getFromResource("frontend-fastopt.js")) ~
         path("chat") {
           parameter('name) { name ⇒
-            handleWebsocketMessages(websocketChatFlow(sender = name))
+            handleWebSocketMessages(websocketChatFlow(sender = name))
           }
         }
     } ~
       getFromResourceDirectory("web")
 
-  def websocketChatFlow(sender: String): Flow[Message, Message, Unit] =
+  def websocketChatFlow(sender: String): Flow[Message, Message, Any] =
     Flow[Message]
       .collect {
         case TextMessage.Strict(msg) ⇒ msg // unpack incoming WS text messages...
@@ -55,7 +55,7 @@ class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directi
       }
       .via(reportErrorsFlow) // ... then log any processing errors on stdin
 
-  def reportErrorsFlow[T]: Flow[T, T, Unit] =
+  def reportErrorsFlow[T]: Flow[T, T, Any] =
     Flow[T]
       .transform(() ⇒ new PushStage[T, T] {
         def onPush(elem: T, ctx: Context[T]): SyncDirective = ctx.push(elem)

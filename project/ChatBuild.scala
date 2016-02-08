@@ -4,10 +4,14 @@ import Keys._
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin._
 import autoImport._
+import sbtassembly.AssemblyKeys
 
 import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
+  lazy val scalaV = "2.11.7"
+  lazy val akkaV = "2.4.2-RC2"
+
   lazy val root =
     Project("root", file("."))
       .aggregate(frontend, backend, cli)
@@ -36,7 +40,7 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-experimental" % "2.0",
+          "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
           "org.specs2" %% "specs2" % "2.3.12" % "test",
           "com.lihaoyi" %% "upickle" % "0.2.8"
         ),
@@ -53,7 +57,7 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-experimental" % "2.0",
+          "com.typesafe.akka" %% "akka-http-core" % akkaV,
           "org.specs2" %% "specs2" % "2.3.12" % "test",
           "com.lihaoyi" %% "upickle" % "0.2.8"
         ),
@@ -69,8 +73,6 @@ object ChatBuild extends Build {
 
   lazy val sharedJvm= shared.jvm
   lazy val sharedJs= shared.js
-
-  lazy val scalaV = "2.11.7"
 
   def commonSettings = Seq(
     scalaVersion := scalaV

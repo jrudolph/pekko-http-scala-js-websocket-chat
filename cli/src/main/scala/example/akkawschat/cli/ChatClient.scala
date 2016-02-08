@@ -26,7 +26,7 @@ object ChatClient {
         .viaMat(handler)(Keep.right)
         .map(TextMessage(_))
 
-    val (fut, t) = Http().singleWebsocketRequest(WebsocketRequest(endpoint), wsFlow)
+    val (fut, t) = Http().singleWebSocketRequest(WebSocketRequest(endpoint), wsFlow)
     fut.map {
       case v: ValidUpgrade                         ⇒ t
       case InvalidUpgradeResponse(response, cause) ⇒ throw new RuntimeException(s"Connection to chat at $endpoint failed with $cause")

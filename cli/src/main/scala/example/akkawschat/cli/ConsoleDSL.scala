@@ -13,7 +13,7 @@ trait ConsoleDSL[T] {
   def initialState: State
 
   /** Returns a Flow that implements the console logic. */
-  def consoleHandler(implicit ec: ExecutionContext): Flow[Command, T, Unit] = {
+  def consoleHandler(implicit ec: ExecutionContext): Flow[Command, T, Any] = {
     val characters = Source.fromGraph(new ConsoleInput)
 
     val graph =

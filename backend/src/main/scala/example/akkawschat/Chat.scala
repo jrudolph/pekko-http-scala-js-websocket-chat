@@ -6,7 +6,7 @@ import akka.stream.scaladsl._
 import shared.Protocol
 
 trait Chat {
-  def chatFlow(sender: String): Flow[String, Protocol.Message, Unit]
+  def chatFlow(sender: String): Flow[String, Protocol.Message, Any]
 
   def injectMessage(message: Protocol.ChatMessage): Unit
 }
@@ -45,7 +45,7 @@ object Chat {
     def chatInSink(sender: String) = Sink.actorRef[ChatEvent](chatActor, ParticipantLeft(sender))
 
     new Chat {
-      def chatFlow(sender: String): Flow[String, Protocol.ChatMessage, Unit] = {
+      def chatFlow(sender: String): Flow[String, Protocol.ChatMessage, Any] = {
         val in =
           Flow[String]
             .map(ReceivedMessage(sender, _))
