@@ -10,7 +10,7 @@ import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
   lazy val scalaV = "2.11.7"
-  lazy val akkaV = "2.4.2-RC3"
+  lazy val akkaV = "2.4.2"
 
   lazy val root =
     Project("root", file("."))
