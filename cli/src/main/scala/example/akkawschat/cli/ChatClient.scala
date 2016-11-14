@@ -12,7 +12,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.ws._
 
-import upickle._
+import upickle.default._
 
 import shared.Protocol
 

@@ -9,8 +9,10 @@ import sbtassembly.AssemblyKeys
 import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
-  lazy val scalaV = "2.11.7"
-  lazy val akkaV = "2.4.2"
+  lazy val scalaV = "2.11.8"
+  lazy val akkaV = "2.4.12"
+  lazy val akkaHttpV = "10.0.0-RC2"
+  lazy val upickleV = "0.4.3"
 
   lazy val root =
     Project("root", file("."))
@@ -27,7 +29,7 @@ object ChatBuild extends Build {
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
           "org.scala-js" %%% "scalajs-dom" % "0.8.2",
-          "com.lihaoyi" %%% "upickle" % "0.2.8",
+          "com.lihaoyi" %%% "upickle" % upickleV,
           "com.lihaoyi" %%% "utest" % "0.3.0" % "test"
         )
       )
@@ -40,9 +42,9 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-experimental" % akkaV,
+          "com.typesafe.akka" %% "akka-http" % akkaHttpV,
           "org.specs2" %% "specs2" % "2.3.12" % "test",
-          "com.lihaoyi" %% "upickle" % "0.2.8"
+          "com.lihaoyi" %% "upickle" % upickleV
         ),
         (resourceGenerators in Compile) <+=
           (fastOptJS in Compile in frontend, packageScalaJSLauncher in Compile in frontend)
@@ -57,9 +59,9 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-http-core" % akkaV,
+          "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
           "org.specs2" %% "specs2" % "2.3.12" % "test",
-          "com.lihaoyi" %% "upickle" % "0.2.8"
+          "com.lihaoyi" %% "upickle" % upickleV
         ),
         fork in run := true,
         connectInput in run := true

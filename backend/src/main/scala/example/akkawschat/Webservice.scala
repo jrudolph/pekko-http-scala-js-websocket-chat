@@ -12,7 +12,7 @@ import akka.http.scaladsl.server.Directives
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
-import upickle._
+import upickle.default._
 import shared.Protocol
 import shared.Protocol._
 

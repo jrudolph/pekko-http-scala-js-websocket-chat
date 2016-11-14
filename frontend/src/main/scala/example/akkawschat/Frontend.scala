@@ -5,7 +5,7 @@ import org.scalajs.dom.raw._
 import scala.scalajs.js
 import org.scalajs.dom
 
-import upickle._
+import upickle.default._
 import shared.Protocol
 
 object Frontend extends js.JSApp {
