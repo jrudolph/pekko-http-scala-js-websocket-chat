@@ -10,9 +10,9 @@ import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
   lazy val scalaV = "2.11.8"
-  lazy val akkaV = "2.4.12"
-  lazy val akkaHttpV = "10.0.0-RC2"
-  lazy val upickleV = "0.4.3"
+  lazy val akkaV = "2.4.16"
+  lazy val akkaHttpV = "10.0.1"
+  lazy val upickleV = "0.4.4"
 
   lazy val root =
     Project("root", file("."))
@@ -28,9 +28,9 @@ object ChatBuild extends Build {
         persistLauncher in Test := false,
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
-          "org.scala-js" %%% "scalajs-dom" % "0.8.2",
+          "org.scala-js" %%% "scalajs-dom" % "0.9.1",
           "com.lihaoyi" %%% "upickle" % upickleV,
-          "com.lihaoyi" %%% "utest" % "0.3.0" % "test"
+          "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
         )
       )
       .dependsOn(sharedJs)
@@ -43,7 +43,7 @@ object ChatBuild extends Build {
       .settings(
         libraryDependencies ++= Seq(
           "com.typesafe.akka" %% "akka-http" % akkaHttpV,
-          "org.specs2" %% "specs2" % "2.3.12" % "test",
+          "org.specs2" %% "specs2-core" % "2.4.17" % "test",
           "com.lihaoyi" %% "upickle" % upickleV
         ),
         (resourceGenerators in Compile) <+=
@@ -60,7 +60,7 @@ object ChatBuild extends Build {
       .settings(
         libraryDependencies ++= Seq(
           "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
-          "org.specs2" %% "specs2" % "2.3.12" % "test",
+          "org.specs2" %% "specs2-core" % "2.4.17" % "test",
           "com.lihaoyi" %% "upickle" % upickleV
         ),
         fork in run := true,
@@ -68,10 +68,11 @@ object ChatBuild extends Build {
       )
       .dependsOn(sharedJvm)
 
-  lazy val shared = (crossProject.crossType(CrossType.Pure) in file ("shared")).
-    settings(
-      scalaVersion:=scalaV
+  lazy val shared = (crossProject.crossType(CrossType.Pure) in file ("shared"))
+    .settings(
+      scalaVersion := scalaV
     )
+
 
   lazy val sharedJvm= shared.jvm
   lazy val sharedJs= shared.js
