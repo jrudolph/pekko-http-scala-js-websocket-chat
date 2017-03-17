@@ -9,10 +9,13 @@ import sbtassembly.AssemblyKeys
 import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
-  lazy val scalaV = "2.11.8"
-  lazy val akkaV = "2.4.16"
-  lazy val akkaHttpV = "10.0.1"
-  lazy val upickleV = "0.4.4"
+  val scalaV = "2.12.1"
+  val akkaV = "2.4.17"
+  val akkaHttpV = "10.0.4"
+  val upickleV = "0.4.4"
+  val utestV = "0.4.5"
+  val scalaJsDomV = "0.9.1"
+  val specs2V = "3.8.9"
 
   lazy val root =
     Project("root", file("."))
@@ -28,9 +31,9 @@ object ChatBuild extends Build {
         persistLauncher in Test := false,
         testFrameworks += new TestFramework("utest.runner.Framework"),
         libraryDependencies ++= Seq(
-          "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+          "org.scala-js" %%% "scalajs-dom" % scalaJsDomV,
           "com.lihaoyi" %%% "upickle" % upickleV,
-          "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
+          "com.lihaoyi" %%% "utest" % utestV % "test"
         )
       )
       .dependsOn(sharedJs)
@@ -38,12 +41,11 @@ object ChatBuild extends Build {
   // Akka Http based backend
   lazy val backend =
     Project("backend", file("backend"))
-      .settings(Revolver.settings: _*)
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
           "com.typesafe.akka" %% "akka-http" % akkaHttpV,
-          "org.specs2" %% "specs2-core" % "2.4.17" % "test",
+          "org.specs2" %% "specs2-core" % specs2V % "test",
           "com.lihaoyi" %% "upickle" % upickleV
         ),
         (resourceGenerators in Compile) <+=
@@ -55,12 +57,11 @@ object ChatBuild extends Build {
 
   lazy val cli =
     Project("cli", file("cli"))
-      .settings(Revolver.settings: _*)
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
           "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
-          "org.specs2" %% "specs2-core" % "2.4.17" % "test",
+          "org.specs2" %% "specs2-core" % specs2V % "test",
           "com.lihaoyi" %% "upickle" % upickleV
         ),
         fork in run := true,
