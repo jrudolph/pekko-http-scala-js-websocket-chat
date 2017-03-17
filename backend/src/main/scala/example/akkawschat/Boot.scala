@@ -23,6 +23,6 @@ object Boot extends App {
       println(s"Server is listening on ${localAddress.getHostName}:${localAddress.getPort}")
     case Failure(e) ⇒
       println(s"Binding failed with ${e.getMessage}")
-      system.shutdown()
+      system.terminate()
   }
 }

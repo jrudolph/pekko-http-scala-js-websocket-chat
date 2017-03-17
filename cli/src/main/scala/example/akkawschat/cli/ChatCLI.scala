@@ -2,15 +2,12 @@ package example.akkawschat.cli
 
 import akka.actor.ActorSystem
 
-import scala.util.control.NonFatal
-
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{ Source, Flow }
-
+import akka.stream.scaladsl.{ Flow, Keep, Source }
 import akka.http.scaladsl.model.Uri
-import akka.stream.stage.{ TerminationDirective, SyncDirective, Context, PushStage }
-
 import shared.Protocol
+
+import scala.util.{ Failure, Success }
 
 object ChatCLI extends App {
   def promptForName(): String = {
@@ -53,23 +50,17 @@ object ChatCLI extends App {
         inputFlow
           .via(consoleHandler)
           .filterNot(_.trim.isEmpty)
-          .transform(() ⇒ new PushStage[String, String] {
-            def onPush(elem: String, ctx: Context[String]): SyncDirective = ctx.push(elem)
-
-            override def onUpstreamFinish(ctx: Context[String]): TerminationDirective = {
+          .watchTermination()((_, f) => f onComplete {
+            case Success(_) =>
               println("\nFinishing...")
-              system.shutdown()
-              super.onUpstreamFinish(ctx)
-            }
+              system.terminate()
+            case Failure(e) ⇒
+              println(s"Connection to $endpoint failed because of '${e.getMessage}'")
+              system.terminate()
           })
 
       println("Connecting... (Use Ctrl-D to exit.)")
       ChatClient.connect(endpoint, appFlow)
-        .onFailure {
-          case NonFatal(e) ⇒
-            println(s"Connection to $endpoint failed because of '${e.getMessage}'")
-            system.shutdown()
-        }
     }
 
     val basePrompt = s"($name) >"

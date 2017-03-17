@@ -79,6 +79,7 @@ object ChatBuild extends Build {
   lazy val sharedJs= shared.js
 
   def commonSettings = Seq(
-    scalaVersion := scalaV
+    scalaVersion := scalaV,
+    scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-Ywarn-dead-code", "-unchecked", "-Xlint", "-Ywarn-unused-import")
   ) ++ ScalariformSupport.formatSettings
 }

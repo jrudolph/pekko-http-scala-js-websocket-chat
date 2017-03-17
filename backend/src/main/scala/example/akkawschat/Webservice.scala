@@ -4,17 +4,16 @@ import java.util.Date
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{ Message, TextMessage }
-import akka.stream.stage._
 
 import scala.concurrent.duration._
-
 import akka.http.scaladsl.server.Directives
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
-
 import upickle.default._
 import shared.Protocol
 import shared.Protocol._
+
+import scala.util.Failure
 
 class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
   val theChat = Chat.create(system)
@@ -57,12 +56,9 @@ class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directi
 
   def reportErrorsFlow[T]: Flow[T, T, Any] =
     Flow[T]
-      .transform(() ⇒ new PushStage[T, T] {
-        def onPush(elem: T, ctx: Context[T]): SyncDirective = ctx.push(elem)
-
-        override def onUpstreamFailure(cause: Throwable, ctx: Context[T]): TerminationDirective = {
+      .watchTermination()((_, f) => f.onComplete {
+        case Failure(cause) =>
           println(s"WS stream failed with $cause")
-          super.onUpstreamFailure(cause, ctx)
-        }
+        case _ => // ignore regular completion
       })
 }
