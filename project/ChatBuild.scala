@@ -6,7 +6,6 @@ import ScalaJSPlugin._
 import autoImport._
 import sbtassembly.AssemblyKeys
 
-import spray.revolver.RevolverPlugin._
 
 object ChatBuild extends Build {
   val scalaV = "2.12.1"
@@ -48,10 +47,12 @@ object ChatBuild extends Build {
           "org.specs2" %% "specs2-core" % specs2V % "test",
           "com.lihaoyi" %% "upickle" % upickleV
         ),
-        (resourceGenerators in Compile) <+=
-          (fastOptJS in Compile in frontend, packageScalaJSLauncher in Compile in frontend)
-            .map((f1, f2) => Seq(f1.data, f2.data)),
-        watchSources <++= (watchSources in frontend)
+        resourceGenerators in Compile += Def.task {
+          val f1 = (fastOptJS in Compile in frontend).value
+          val f2 = (packageScalaJSLauncher in Compile in frontend).value
+          Seq(f1.data, f2.data)
+        }.taskValue,
+        watchSources ++= (watchSources in frontend).value
       )
       .dependsOn(sharedJvm)
 
@@ -69,10 +70,11 @@ object ChatBuild extends Build {
       )
       .dependsOn(sharedJvm)
 
-  lazy val shared = (crossProject.crossType(CrossType.Pure) in file ("shared"))
-    .settings(
-      scalaVersion := scalaV
-    )
+  lazy val shared = 
+    (crossProject.crossType(CrossType.Pure) in file ("shared"))
+      .settings(
+        scalaVersion := scalaV
+      )
 
 
   lazy val sharedJvm= shared.jvm
