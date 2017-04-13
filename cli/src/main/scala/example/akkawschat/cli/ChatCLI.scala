@@ -3,7 +3,7 @@ package example.akkawschat.cli
 import akka.actor.ActorSystem
 
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{ Flow, Keep, Source }
+import akka.stream.scaladsl.{ Flow, Source }
 import akka.http.scaladsl.model.Uri
 import shared.Protocol
 
