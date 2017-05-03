@@ -8,9 +8,9 @@ import sbtassembly.AssemblyKeys
 
 
 object ChatBuild extends Build {
-  val scalaV = "2.12.1"
-  val akkaV = "2.5.0"
   val akkaHttpV = "10.0.5"
+  val scalaV = "2.12.2"
+  val akkaV = "2.5.1"
   val upickleV = "0.4.4"
   val utestV = "0.4.5"
   val scalaJsDomV = "0.9.1"
@@ -43,7 +43,7 @@ object ChatBuild extends Build {
       .settings(commonSettings: _*)
       .settings(
         libraryDependencies ++= Seq(
-          "com.typesafe.akka" %% "akka-stream" % akkaV,
+          "com.typesafe.akka" %% "akka-stream" % akkaV % "runtime",
           "com.typesafe.akka" %% "akka-http" % akkaHttpV,
           "org.specs2" %% "specs2-core" % specs2V % "test",
           "com.lihaoyi" %% "upickle" % upickleV
