@@ -8,7 +8,7 @@ import sbtassembly.AssemblyKeys
 
 
 object ChatBuild extends Build {
-  val akkaHttpV = "10.0.5"
+  val akkaHttpV = "10.0.6"
   val scalaV = "2.12.2"
   val akkaV = "2.5.1"
   val upickleV = "0.4.4"
