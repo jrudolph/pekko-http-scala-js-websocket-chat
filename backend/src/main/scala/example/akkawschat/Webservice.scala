@@ -7,7 +7,6 @@ import akka.http.scaladsl.model.ws.{ Message, TextMessage }
 
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.Directives
-import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import upickle.default._
 import shared.Protocol
@@ -15,7 +14,7 @@ import shared.Protocol._
 
 import scala.util.Failure
 
-class Webservice(implicit fm: Materializer, system: ActorSystem) extends Directives {
+class Webservice(implicit system: ActorSystem) extends Directives {
   val theChat = Chat.create(system)
   import system.dispatcher
   system.scheduler.schedule(15.second, 15.second) {
