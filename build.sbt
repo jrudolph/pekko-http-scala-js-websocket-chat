@@ -1,9 +1,9 @@
 val akkaHttpV = "10.1.0-RC1"
 val scalaV = "2.12.4"
 val akkaV = "2.5.8"
-val upickleV = "0.4.4"
-val utestV = "0.4.5"
-val scalaJsDomV = "0.9.1"
+val upickleV = "0.5.1"
+val utestV = "0.6.3"
+val scalaJsDomV = "0.9.4"
 val specs2V = "4.0.2"
 
 lazy val root =
