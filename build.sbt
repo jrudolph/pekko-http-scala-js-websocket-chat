@@ -1,4 +1,4 @@
-val akkaHttpV = "10.0.11"
+val akkaHttpV = "10.1.0-RC1"
 val scalaV = "2.12.4"
 val akkaV = "2.5.8"
 val upickleV = "0.4.4"
@@ -33,7 +33,7 @@ lazy val backend =
     .settings(commonSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-stream" % akkaV % "runtime",
+        "com.typesafe.akka" %% "akka-stream" % akkaV,
         "com.typesafe.akka" %% "akka-http" % akkaHttpV,
         "org.specs2" %% "specs2-core" % specs2V % "test",
         "com.lihaoyi" %% "upickle" % upickleV
