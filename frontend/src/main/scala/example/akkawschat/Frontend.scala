@@ -53,8 +53,8 @@ object Frontend extends js.JSApp {
 
       event
     }
-    chat.onerror = { (event: ErrorEvent) ⇒
-      playground.insertBefore(p(s"Failed: code: ${event.colno}"), playground.firstChild)
+    chat.onerror = { (event: Event) ⇒
+      playground.insertBefore(p(s"Failed: code: ${event.asInstanceOf[ErrorEvent].colno}"), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true
     }
