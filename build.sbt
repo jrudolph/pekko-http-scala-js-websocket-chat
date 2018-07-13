@@ -4,7 +4,7 @@ val akkaV = "2.5.13"
 val upickleV = "0.4.4"
 val utestV = "0.6.4"
 val scalaJsDomV = "0.9.6"
-val specs2V = "4.3.1"
+val specs2V = "4.3.2"
 
 lazy val root =
   project.in(file("."))
