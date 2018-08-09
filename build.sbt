@@ -1,6 +1,6 @@
 val akkaHttpV = "10.1.3"
 val scalaV = "2.12.6"
-val akkaV = "2.5.13"
+val akkaV = "2.5.14"
 val upickleV = "0.4.4"
 val utestV = "0.6.4"
 val scalaJsDomV = "0.9.6"
