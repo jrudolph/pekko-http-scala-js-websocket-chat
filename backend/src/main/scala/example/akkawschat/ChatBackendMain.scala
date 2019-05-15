@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import scala.util.{ Success, Failure }
 
-object Boot extends App {
+object ChatBackendMain extends App {
   implicit val system = ActorSystem()
   import system.dispatcher
   implicit val materializer = ActorMaterializer()
