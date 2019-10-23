@@ -31,7 +31,7 @@ object Chat {
             val entry @ (name, ref) = subscribers.find(_._1 == person).get
             // report downstream of completion, otherwise, there's a risk of leaking the
             // downstream when the TCP connection is only half-closed
-            ref ! Status.Success(Unit)
+            ref ! Status.Success(())
             subscribers -= entry
             dispatch(Protocol.Left(person, members))
           case Terminated(sub) ⇒

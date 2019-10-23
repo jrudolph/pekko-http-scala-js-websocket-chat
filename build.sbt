@@ -1,10 +1,10 @@
-val akkaHttpV = "10.1.8"
-val scalaV = "2.12.8"
-val akkaV = "2.5.22"
-val upickleV = "0.4.4"
-val utestV = "0.6.7"
+val akkaHttpV = "10.1.10"
+val scalaV = "2.13.1"
+val akkaV = "2.6.0-RC1"
+val upickleV = "0.8.0"
+val utestV = "0.7.1"
 val scalaJsDomV = "0.9.7"
-val specs2V = "4.5.1"
+val specs2V = "4.8.0"
 
 lazy val root =
   project.in(file("."))
@@ -21,7 +21,6 @@ lazy val frontend =
       testFrameworks += new TestFramework("utest.runner.Framework"),
       libraryDependencies ++= Seq(
         "org.scala-js" %%% "scalajs-dom" % scalaJsDomV,
-        "com.lihaoyi" %%% "upickle" % upickleV,
         "com.lihaoyi" %%% "utest" % utestV % "test"
       )
     )
@@ -65,7 +64,8 @@ lazy val cli =
 lazy val shared =
   (crossProject.crossType(CrossType.Pure) in file ("shared"))
     .settings(
-      scalaVersion := scalaV
+      scalaVersion := scalaV,
+      libraryDependencies += "com.lihaoyi" %%% "upickle" % upickleV,
     )
 
 
@@ -74,5 +74,5 @@ lazy val sharedJs= shared.js
 
 def commonSettings = Seq(
   scalaVersion := scalaV,
-  scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-Ywarn-dead-code", "-unchecked", "-Xlint", "-Ywarn-unused-import")
+  scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-unchecked", "-Xlint")
 ) ++ ScalariformSupport.formatSettings
