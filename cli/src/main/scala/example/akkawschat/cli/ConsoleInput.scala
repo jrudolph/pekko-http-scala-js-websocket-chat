@@ -36,9 +36,9 @@ class ConsoleInput(implicit ec: ExecutionContext) extends GraphStage[SourceShape
       setHandler(out, new OutHandler {
         def onPull(): Unit = getOne()
 
-        override def onDownstreamFinish(): Unit = {
+        override def onDownstreamFinish(cause: Throwable): Unit = {
           cancelled = true
-          super.onDownstreamFinish()
+          super.onDownstreamFinish(cause)
         }
       })
 

@@ -33,8 +33,6 @@ trait ConsoleDSL[T] {
     def inlets = Vector(characterInput, commandIn)
     def outlets = Vector(output)
     def deepCopy(): Shape = ConsoleStageShape(characterInput.carbonCopy(), commandIn.carbonCopy(), output.carbonCopy())
-    def copyFromPorts(inlets: immutable.Seq[Inlet[_]], outlets: immutable.Seq[Outlet[_]]): Shape =
-      ConsoleStageShape(inlets(0).asInstanceOf[Inlet[Char]], inlets(1).asInstanceOf[Inlet[Command]], outlets(0).asInstanceOf[Outlet[T]])
   }
   object ConsoleStage extends GraphStage[ConsoleStageShape] {
     import TTY._

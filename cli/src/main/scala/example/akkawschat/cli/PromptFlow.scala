@@ -1,7 +1,5 @@
 package example.akkawschat.cli
 
-import scala.collection.immutable
-
 import akka.stream._
 import akka.stream.scaladsl.{ Flow, Source, GraphDSL }
 import akka.stream.stage.{ InHandler, GraphStageLogic, GraphStage }
@@ -34,8 +32,6 @@ case class PromptFlowShape(characterInput: Inlet[Char], outputLines: Inlet[Strin
   def inlets = Vector(characterInput, outputLines)
   def outlets = Vector(readLines)
   def deepCopy(): Shape = PromptFlowShape(characterInput.carbonCopy(), outputLines.carbonCopy(), readLines.carbonCopy())
-  def copyFromPorts(inlets: immutable.Seq[Inlet[_]], outlets: immutable.Seq[Outlet[_]]): Shape =
-    PromptFlowShape(inlets(0).asInstanceOf[Inlet[Char]], inlets(1).asInstanceOf[Inlet[String]], outlets(0).asInstanceOf[Outlet[String]])
 }
 
 object PromptFlow extends GraphStage[PromptFlowShape] {
