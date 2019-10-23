@@ -8,7 +8,6 @@ import scala.util.{ Success, Failure }
 object ChatBackendMain extends App {
   implicit val system = ActorSystem()
   import system.dispatcher
-  implicit val materializer = ActorMaterializer()
 
   val config = system.settings.config
   val interface = config.getString("app.interface")

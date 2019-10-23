@@ -15,9 +15,9 @@ import shared.Protocol._
 import scala.util.Failure
 
 class Webservice(implicit system: ActorSystem) extends Directives {
-  val theChat = Chat.create(system)
+  val theChat = Chat.create()
   import system.dispatcher
-  system.scheduler.schedule(15.second, 15.second) {
+  system.scheduler.scheduleAtFixedRate(15.second, 15.second) { () =>
     theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
   }
 
@@ -31,7 +31,7 @@ class Webservice(implicit system: ActorSystem) extends Directives {
         path("frontend-launcher.js")(getFromResource("frontend-launcher.js")) ~
         path("frontend-fastopt.js")(getFromResource("frontend-fastopt.js")) ~
         path("chat") {
-          parameter('name) { name ⇒
+          parameter("name") { name =>
             handleWebSocketMessages(websocketChatFlow(sender = name))
           }
         }
@@ -41,14 +41,14 @@ class Webservice(implicit system: ActorSystem) extends Directives {
   def websocketChatFlow(sender: String): Flow[Message, Message, Any] =
     Flow[Message]
       .collect {
-        case TextMessage.Strict(msg) ⇒ msg // unpack incoming WS text messages...
+        case TextMessage.Strict(msg) => msg // unpack incoming WS text messages...
         // This will lose (ignore) messages not received in one chunk (which is
         // unlikely because chat messages are small) but absolutely possible
         // FIXME: We need to handle TextMessage.Streamed as well.
       }
       .via(theChat.chatFlow(sender)) // ... and route them through the chatFlow ...
       .map {
-        case msg: Protocol.Message ⇒
+        case msg: Protocol.Message =>
           TextMessage.Strict(write(msg)) // ... pack outgoing messages into WS JSON messages ...
       }
       .via(reportErrorsFlow) // ... then log any processing errors on stdin
