@@ -1,20 +1,36 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MyChats</title>
+	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
 <body>
-<div>Hello World!</div>
-
+<header>
+		<div style="background-color:#e5e5e5;padding:10px;text-align:left;">
+  		    <h3>My Chats</h3>
+		</div>	
+	</header>
+<div style="background-color:#e5e5e5;text-align:center;padding:10px;margin-top:7px;">
 <form action="#">
-    <label for="name">Name: </label><input id="name" type="text" />
+    <label for="name">Name: </label><input class="w3-input w3-animate-input" id="name" type="text" style="width:135px" />
     <input id="join" type="button" value="Join!"/>
 </form>
 
 <form action="#">
-    <label for="message">Say something: </label><input id="message" type="text" />
-    <input id="send" type="button" value="Send" disabled="true"/>
+    <label for="message">Message: </label><input class="w3-input w3-animate-input" id="message" type="text" style="width:135px"/>
+    <input  id="send" type="button" value="Send" disabled="true"/>
 </form>
-
+</div>
 <div id="playground"/>
 
 <script type="text/javascript" src="frontend-fastopt.js"></script>
 <script type="text/javascript" src="frontend-launcher.js"></script>
+
+<footer>
+    		<div style="background-color:#e5e5e5;text-align:center;padding:10px;margin-top:7px;"><p >Copyright © mevinod <a href="http://mevinod.com">mevinod.com</a></p></div>		
+</footer>
+
 </body>
 </html>
