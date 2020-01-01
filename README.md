@@ -1,5 +1,7 @@
 # Akka HTTP / Scala.js / Websocket Chat App
 
+Install JDK and sbt
+
 A simple chat app that uses akka-http backend and a scala.js frontend to implement a simple
 websocket based chat application.
 
