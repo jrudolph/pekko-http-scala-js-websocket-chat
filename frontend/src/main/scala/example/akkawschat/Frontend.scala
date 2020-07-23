@@ -2,24 +2,23 @@ package example.akkawschat
 
 import org.scalajs.dom.raw._
 
-import scala.scalajs.js
 import org.scalajs.dom
 
 import upickle.default._
 import shared.Protocol
 
-object Frontend extends js.JSApp {
+object Frontend {
   val joinButton = dom.document.getElementById("join").asInstanceOf[HTMLButtonElement]
   val sendButton = dom.document.getElementById("send").asInstanceOf[HTMLButtonElement]
 
-  def main(): Unit = {
+  def main(args: Array[String]): Unit = {
     val nameField = dom.document.getElementById("name").asInstanceOf[HTMLInputElement]
-    joinButton.onclick = { (event: MouseEvent) ⇒
+    joinButton.onclick = { (event: MouseEvent) =>
       joinChat(nameField.value)
       event.preventDefault()
     }
     nameField.focus()
-    nameField.onkeypress = { (event: KeyboardEvent) ⇒
+    nameField.onkeypress = { (event: KeyboardEvent) =>
       if (event.keyCode == 13) {
         joinButton.click()
         event.preventDefault()
@@ -32,19 +31,19 @@ object Frontend extends js.JSApp {
     val playground = dom.document.getElementById("playground")
     playground.innerHTML = s"Trying to join chat as '$name'..."
     val chat = new WebSocket(getWebsocketUri(dom.document, name))
-    chat.onopen = { (event: Event) ⇒
+    chat.onopen = { (event: Event) =>
       playground.insertBefore(p("Chat connection was successful!"), playground.firstChild)
       sendButton.disabled = false
 
       val messageField = dom.document.getElementById("message").asInstanceOf[HTMLInputElement]
       messageField.focus()
-      messageField.onkeypress = { (event: KeyboardEvent) ⇒
+      messageField.onkeypress = { (event: KeyboardEvent) =>
         if (event.keyCode == 13) {
           sendButton.click()
           event.preventDefault()
         }
       }
-      sendButton.onclick = { (event: Event) ⇒
+      sendButton.onclick = { (event: Event) =>
         chat.send(messageField.value)
         messageField.value = ""
         messageField.focus()
@@ -53,21 +52,21 @@ object Frontend extends js.JSApp {
 
       event
     }
-    chat.onerror = { (event: Event) ⇒
+    chat.onerror = { (event: Event) =>
       playground.insertBefore(p(s"Failed: code: ${event.asInstanceOf[ErrorEvent].colno}"), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true
     }
-    chat.onmessage = { (event: MessageEvent) ⇒
+    chat.onmessage = { (event: MessageEvent) =>
       val wsMsg = read[Protocol.Message](event.data.toString)
 
       wsMsg match {
-        case Protocol.ChatMessage(sender, message) ⇒ writeToArea(s"$sender said: $message")
-        case Protocol.Joined(member, _)            ⇒ writeToArea(s"$member joined!")
-        case Protocol.Left(member, _)              ⇒ writeToArea(s"$member left!")
+        case Protocol.ChatMessage(sender, message) => writeToArea(s"$sender said: $message")
+        case Protocol.Joined(member, _)            => writeToArea(s"$member joined!")
+        case Protocol.Left(member, _)              => writeToArea(s"$member left!")
       }
     }
-    chat.onclose = { (event: Event) ⇒
+    chat.onclose = { (event: Event) =>
       playground.insertBefore(p("Connection to chat lost. You can try to rejoin manually."), playground.firstChild)
       joinButton.disabled = false
       sendButton.disabled = true

@@ -1,9 +1,9 @@
-val akkaHttpV = "10.1.10"
-val scalaV = "2.13.1"
-val akkaV = "2.6.0-RC1"
-val upickleV = "0.8.0"
-val utestV = "0.7.1"
-val scalaJsDomV = "0.9.7"
+val akkaHttpV = "10.2.0-RC2"
+val scalaV = "2.13.3"
+val akkaV = "2.6.7"
+val upickleV = "1.2.0"
+val utestV = "0.7.4"
+val scalaJsDomV = "1.0.0"
 val specs2V = "4.8.0"
 
 lazy val root =
@@ -16,8 +16,7 @@ lazy val frontend =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
-      persistLauncher in Compile := true,
-      persistLauncher in Test := false,
+      scalaJSUseMainModuleInitializer := true,
       testFrameworks += new TestFramework("utest.runner.Framework"),
       libraryDependencies ++= Seq(
         "org.scala-js" %%% "scalajs-dom" % scalaJsDomV,
@@ -38,9 +37,8 @@ lazy val backend =
         "com.lihaoyi" %% "upickle" % upickleV
       ),
       resourceGenerators in Compile += Def.task {
-        val f1 = (fastOptJS in Compile in frontend).value
-        val f2 = (packageScalaJSLauncher in Compile in frontend).value
-        Seq(f1.data, f2.data)
+        val f1 = (fastOptJS in Compile in frontend).value.data
+        Seq(f1, new File(f1.getPath+".map"))
       }.taskValue,
       watchSources ++= (watchSources in frontend).value
     )
@@ -62,7 +60,7 @@ lazy val cli =
     .dependsOn(sharedJvm)
 
 lazy val shared =
-  (crossProject.crossType(CrossType.Pure) in file ("shared"))
+  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file ("shared"))
     .settings(
       scalaVersion := scalaV,
       libraryDependencies += "com.lihaoyi" %%% "upickle" % upickleV,
@@ -74,5 +72,6 @@ lazy val sharedJs= shared.js
 
 def commonSettings = Seq(
   scalaVersion := scalaV,
-  scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-unchecked", "-Xlint")
-) ++ ScalariformSupport.formatSettings
+  scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-unchecked", "-Xlint"),
+  resolvers += "staging" at "https://dl.bintray.com/akka/maven"
+)

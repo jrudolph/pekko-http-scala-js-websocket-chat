@@ -1,18 +1,14 @@
 package example.akkawschat.cli
 
-import scala.concurrent.Future
-
 import akka.actor.ActorSystem
-
-import akka.stream.scaladsl.{ Keep, Source, Sink, Flow }
-
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.ws._
-
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
+import shared.Protocol
 import upickle.default._
 
-import shared.Protocol
+import scala.concurrent.Future
 
 object ChatClient {
   def connect[T](endpoint: Uri, handler: Flow[Protocol.Message, String, T])(implicit system: ActorSystem): Future[T] = {
