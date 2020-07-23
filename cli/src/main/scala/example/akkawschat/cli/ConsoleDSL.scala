@@ -4,7 +4,6 @@ import akka.stream.stage.{ InHandler, GraphStageLogic, GraphStage }
 import akka.stream._
 import akka.stream.scaladsl.{ GraphDSL, Source, Flow }
 
-import scala.collection.immutable
 import scala.concurrent.ExecutionContext
 
 /** Infrastructure for a small DSL that allows to write stateful concurrent console apps of a certain kind */
@@ -17,7 +16,7 @@ trait ConsoleDSL[T] {
     val characters = Source.fromGraph(new ConsoleInput)
 
     val graph =
-      GraphDSL.create() { implicit b ⇒
+      GraphDSL.create() { implicit b =>
         import GraphDSL.Implicits._
 
         val prompt = b.add(ConsoleStage)
@@ -42,8 +41,8 @@ trait ConsoleDSL[T] {
 
     def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
       new GraphStageLogic(shape) {
-        var inputHandler: State ⇒ PartialFunction[Char, Command] = (_ ⇒ PartialFunction.empty)
-        var promptLine: State ⇒ String = (_ ⇒ "")
+        var inputHandler: State => PartialFunction[Char, Command] = (_ => PartialFunction.empty)
+        var promptLine: State => String = (_ => "")
         var state: State = initialState
 
         setHandler(characterInput, new InHandler {
@@ -53,7 +52,7 @@ trait ConsoleDSL[T] {
               outputLine("Goodbye!")
               completeStage()
             } else {
-              val cmd = inputHandler(state).applyOrElse[Char, Command](input, _ ⇒ Command.Empty)
+              val cmd = inputHandler(state).applyOrElse[Char, Command](input, _ => Command.Empty)
               runCommand(cmd)
 
               pull(characterInput)
@@ -70,21 +69,21 @@ trait ConsoleDSL[T] {
 
         import Command._
         def runCommand(command: Command): Unit = command match {
-          case Empty          ⇒
-          case Multiple(cmds) ⇒ cmds foreach runCommand
-          case PrintLine(line) ⇒
+          case Empty          =>
+          case Multiple(cmds) => cmds foreach runCommand
+          case PrintLine(line) =>
             outputLine(line)
             updatePrompt()
-          case StatefulPrompt(newPrompt) ⇒
+          case StatefulPrompt(newPrompt) =>
             promptLine = newPrompt
             updatePrompt()
-          case SetStatefulInputHandler(newHandler) ⇒ inputHandler = newHandler
-          case UpdateState(modify) ⇒
+          case SetStatefulInputHandler(newHandler) => inputHandler = newHandler
+          case UpdateState(modify) =>
             state = modify(state)
             updatePrompt()
 
-          case Emit(element) ⇒ push(output, element)
-          case Complete      ⇒ completeStage()
+          case Emit(element) => push(output, element)
+          case Complete      => completeStage()
         }
 
         def outputLine(line: String): Unit = print(s"$RESTORE$ERASE_LINE$line\n$SAVE")
@@ -105,12 +104,12 @@ trait ConsoleDSL[T] {
     val Empty = Multiple(Nil)
 
     case class PrintLine(line: String) extends Command
-    def SetPrompt(prompt: String): Command = StatefulPrompt(_ ⇒ prompt)
-    case class StatefulPrompt(prompt: State ⇒ String) extends Command
-    def SetState(state: State): Command = UpdateState(_ ⇒ state)
-    case class UpdateState(modify: State ⇒ State) extends Command
-    def SetInputHandler(handler: PartialFunction[Char, Command]): Command = SetStatefulInputHandler(_ ⇒ handler)
-    case class SetStatefulInputHandler(handler: State ⇒ PartialFunction[Char, Command]) extends Command
+    def SetPrompt(prompt: String): Command = StatefulPrompt(_ => prompt)
+    case class StatefulPrompt(prompt: State => String) extends Command
+    def SetState(state: State): Command = UpdateState(_ => state)
+    case class UpdateState(modify: State => State) extends Command
+    def SetInputHandler(handler: PartialFunction[Char, Command]): Command = SetStatefulInputHandler(_ => handler)
+    case class SetStatefulInputHandler(handler: State => PartialFunction[Char, Command]) extends Command
     case class Emit(element: T) extends Command
     case object Complete extends Command
     case class Multiple(commands: Seq[Command]) extends Command {
@@ -119,13 +118,13 @@ trait ConsoleDSL[T] {
   }
 
   import Command._
-  def readLineStatefulPrompt(prompt: State ⇒ String, currentInput: String = "")(andThen: String ⇒ Command): Command =
-    StatefulPrompt(state ⇒ s"${prompt(state)}$currentInput") ~
+  def readLineStatefulPrompt(prompt: State => String, currentInput: String = "")(andThen: String => Command): Command =
+    StatefulPrompt(state => s"${prompt(state)}$currentInput") ~
       SetInputHandler {
-        case '\r'                       ⇒ andThen(currentInput)
-        case x if x >= 0x20 && x < 0x7e ⇒ readLineStatefulPrompt(prompt, currentInput + x)(andThen)
-        case 127 /* backspace */        ⇒ readLineStatefulPrompt(prompt, currentInput.dropRight(1))(andThen)
+        case '\r'                       => andThen(currentInput)
+        case x if x >= 0x20 && x < 0x7e => readLineStatefulPrompt(prompt, currentInput + x)(andThen)
+        case 127 /* backspace */        => readLineStatefulPrompt(prompt, currentInput.dropRight(1))(andThen)
       }
-  def readLine(prompt: String = "> ")(andThen: String ⇒ Command): Command =
-    readLineStatefulPrompt(_ ⇒ prompt)(andThen)
+  def readLine(prompt: String = "> ")(andThen: String => Command): Command =
+    readLineStatefulPrompt(_ => prompt)(andThen)
 }

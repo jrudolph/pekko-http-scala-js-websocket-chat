@@ -15,7 +15,7 @@ object Prompt {
     val characters = Source.fromGraph(new ConsoleInput)
 
     val graph =
-      GraphDSL.create() { implicit b ⇒
+      GraphDSL.create() { implicit b =>
         import GraphDSL.Implicits._
 
         val prompt = b.add(PromptFlow)
@@ -51,18 +51,18 @@ object PromptFlow extends GraphStage[PromptFlowShape] {
         def onPush(): Unit = {
           val res = grab(characterInput)
           res match {
-            case 4 /* Ctrl-D */ ⇒
+            case 4 /* Ctrl-D */ =>
               println()
               complete(readLinesOut)
               completeStage()
-            case '\r' ⇒
+            case '\r' =>
               push(readLinesOut, collectedString)
               collectedString = ""
               prompt()
-            case 127 /* backspace */ ⇒
+            case 127 /* backspace */ =>
               collectedString = collectedString.dropRight(1)
               prompt()
-            case x ⇒
+            case x =>
               //println(s"Got ${x.toInt}")
               collectedString += x
               print(x)
