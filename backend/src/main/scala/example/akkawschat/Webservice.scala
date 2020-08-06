@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.model.ws.{ Message, TextMessage }
 
 import scala.concurrent.duration._
-import akka.http.scaladsl.server.Directives
+import akka.http.scaladsl.server.{ Directives, Route }
 import akka.stream.scaladsl.Flow
 import upickle.default._
 import shared.Protocol
@@ -21,7 +21,7 @@ class Webservice(implicit system: ActorSystem) extends Directives {
     theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
   }
 
-  def route =
+  val route: Route =
     get {
       pathSingleSlash {
         getFromResource("web/index.html")
