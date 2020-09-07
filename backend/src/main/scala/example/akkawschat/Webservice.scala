@@ -18,7 +18,7 @@ class Webservice(implicit system: ActorSystem) extends Directives {
   val theChat = Chat.create()
   import system.dispatcher
   system.scheduler.scheduleAtFixedRate(15.second, 15.second) { () =>
-    theChat.injectMessage(ChatMessage(sender = "clock", s"Bling! The time is ${new Date().toString}."))
+    theChat.injectMessage(ChatMessage(sender = "", s""))
   }
 
   def route =

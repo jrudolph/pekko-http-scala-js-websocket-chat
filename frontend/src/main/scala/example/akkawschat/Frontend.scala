@@ -62,7 +62,7 @@ object Frontend extends js.JSApp {
       val wsMsg = read[Protocol.Message](event.data.toString)
 
       wsMsg match {
-        case Protocol.ChatMessage(sender, message) ⇒ writeToArea(s"$sender said: $message")
+        case Protocol.ChatMessage(sender, message) ⇒ writeToArea(s"$sender $message")
         case Protocol.Joined(member, _)            ⇒ writeToArea(s"$member joined!")
         case Protocol.Left(member, _)              ⇒ writeToArea(s"$member left!")
       }
