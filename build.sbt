@@ -5,6 +5,7 @@ val upickleV = "0.8.0"
 val utestV = "0.7.1"
 val scalaJsDomV = "0.9.7"
 val specs2V = "4.8.0"
+enablePlugins(JavaAppPackaging)
 
 lazy val root =
   project.in(file("."))
