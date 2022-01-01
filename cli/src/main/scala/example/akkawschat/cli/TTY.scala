@@ -21,9 +21,31 @@ object TTY {
     })
 
   // stty arguments shamelessly stolen from ammonite (https://github.com/lihaoyi/Ammonite/blob/master/terminal/src/main/scala/ammonite/terminal/Utils.scala#L71)
+  private val pathedStty = if (new java.io.File("/bin/stty").exists()) "/bin/stty" else "stty"
+
+  private def sttyCmd(s: String) = {
+    import sys.process._
+    Seq("sh", "-c", s"$pathedStty $s < /dev/tty"): ProcessBuilder
+  }
+
+  private def stty(s: String) =
+    sttyCmd(s).!!
+
+  /*
+   * Executes a stty command for which failure is expected, hence the return
+   * status can be non-null and errors are ignored.
+   * This is appropriate for `stty dsusp undef`, since it's unsupported on Linux
+   * (http://man7.org/linux/man-pages/man3/termios.3.html).
+   */
+  private def sttyFailTolerant(s: String) =
+    sttyCmd(s ++ " 2> /dev/null").!
+
   def noEchoStty() = {
     ensureShutdownHook
-    "stty -F /dev/tty -echo -icanon min 1 -icrnl -inlcr".!!
+    stty("-icanon min 1 -icrnl -inlcr -ixon")
+    sttyFailTolerant("dsusp undef")
+    stty("-echo")
+    stty("intr undef")
   }
   def saneStty() = "stty -F /dev/tty sane".!!
 }
