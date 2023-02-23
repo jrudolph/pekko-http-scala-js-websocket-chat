@@ -1,4 +1,4 @@
-package example.akkawschat.cli
+package example.pekkowschat.cli
 
 object TTY {
   val ANSI_ESCAPE = "\u001b["

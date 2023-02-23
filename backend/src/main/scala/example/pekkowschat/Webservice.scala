@@ -1,13 +1,13 @@
-package example.akkawschat
+package example.pekkowschat
 
 import java.util.Date
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.ws.{ Message, TextMessage }
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.ws.{ Message, TextMessage }
 
 import scala.concurrent.duration._
-import akka.http.scaladsl.server.{ Directives, Route }
-import akka.stream.scaladsl.Flow
+import org.apache.pekko.http.scaladsl.server.{ Directives, Route }
+import org.apache.pekko.stream.scaladsl.Flow
 import upickle.default._
 import shared.Protocol
 import shared.Protocol._

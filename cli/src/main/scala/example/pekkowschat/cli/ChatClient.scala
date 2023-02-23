@@ -1,10 +1,10 @@
-package example.akkawschat.cli
+package example.pekkowschat.cli
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.Uri
-import akka.http.scaladsl.model.ws._
-import akka.stream.scaladsl.{ Flow, Keep, Sink, Source }
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.Uri
+import org.apache.pekko.http.scaladsl.model.ws._
+import org.apache.pekko.stream.scaladsl.{ Flow, Keep, Sink, Source }
 import shared.Protocol
 import upickle.default._
 

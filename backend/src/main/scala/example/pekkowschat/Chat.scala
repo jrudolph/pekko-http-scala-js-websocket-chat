@@ -1,8 +1,8 @@
-package example.akkawschat
+package example.pekkowschat
 
-import akka.actor._
-import akka.stream.OverflowStrategy
-import akka.stream.scaladsl._
+import org.apache.pekko.actor._
+import org.apache.pekko.stream.OverflowStrategy
+import org.apache.pekko.stream.scaladsl._
 import shared.Protocol
 
 import scala.util.control.NonFatal

@@ -1,7 +1,7 @@
-package example.akkawschat.cli
+package example.pekkowschat.cli
 
-import akka.stream.stage.{ OutHandler, GraphStageLogic, GraphStage }
-import akka.stream._
+import org.apache.pekko.stream.stage.{ OutHandler, GraphStageLogic, GraphStage }
+import org.apache.pekko.stream._
 
 import scala.annotation.tailrec
 import scala.concurrent.{ Future, ExecutionContext }

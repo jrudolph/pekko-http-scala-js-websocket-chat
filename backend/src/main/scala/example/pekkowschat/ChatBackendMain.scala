@@ -1,7 +1,7 @@
-package example.akkawschat
+package example.pekkowschat
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
 
 import scala.util.{ Failure, Success }
 
@@ -15,7 +15,7 @@ object ChatBackendMain extends App {
 
   val service = new Webservice
 
-  val binding = Http().newServerAt(interface, port).bind(service.route)
+  val binding = Http().bindAndHandle(service.route, interface, port)
   binding.onComplete {
     case Success(binding) =>
       val localAddress = binding.localAddress

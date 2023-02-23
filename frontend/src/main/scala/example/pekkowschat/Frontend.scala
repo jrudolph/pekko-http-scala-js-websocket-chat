@@ -1,4 +1,4 @@
-package example.akkawschat
+package example.pekkowschat
 
 import org.scalajs.dom.raw._
 

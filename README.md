@@ -1,6 +1,6 @@
-# Akka HTTP / Scala.js / Websocket Chat App
+# Pekko HTTP / Scala.js / Websocket Chat App
 
-A simple chat app that uses akka-http backend and a scala.js frontend to implement a simple
+A simple chat app that uses a pekko-http backend and a scala.js frontend to implement a simple
 websocket based chat application.
 
 To run:
@@ -34,7 +34,7 @@ will start the server listening on all interfaces.
 The `cli` project contains a command line client for the chat to demonstrate the Websocket client and
 how to deal with console input in a streaming way.
 
-![CLI Screencast](https://github.com/jrudolph/akka-http-scala-js-websocket-chat/raw/master/docs/cli-screencast.gif)
+![CLI Screencast](https://github.com/jrudolph/pekko-http-scala-js-websocket-chat/raw/master/docs/cli-screencast.gif)
 
 It runs best directly from a terminal.
 
@@ -61,7 +61,7 @@ or
 
 Here's another screencast that shows live tab completion in action:
 
-![CLI completion screencast](https://github.com/jrudolph/akka-http-scala-js-websocket-chat/raw/master/docs/cli-completion.gif)
+![CLI completion screencast](https://github.com/jrudolph/pekko-http-scala-js-websocket-chat/raw/master/docs/cli-completion.gif)
 
 ## Known issues
 

@@ -1,8 +1,8 @@
-package example.akkawschat.cli
+package example.pekkowschat.cli
 
-import akka.stream._
-import akka.stream.scaladsl.{ Flow, Source, GraphDSL }
-import akka.stream.stage.{ InHandler, GraphStageLogic, GraphStage }
+import org.apache.pekko.stream._
+import org.apache.pekko.stream.scaladsl.{ Flow, Source, GraphDSL }
+import org.apache.pekko.stream.stage.{ InHandler, GraphStageLogic, GraphStage }
 
 import scala.concurrent.ExecutionContext
 

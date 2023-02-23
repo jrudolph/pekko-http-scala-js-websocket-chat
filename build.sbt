@@ -1,10 +1,10 @@
-val akkaHttpV = "10.2.7"
-val scalaV = "2.13.3"
-val akkaV = "2.6.15"
+val pekkoHttpV = "0.0.0+4295-b475736f-SNAPSHOT"
+val scalaV = "2.13.10"
+val pekkoV = "0.0.0+26598-de1a5e3b-SNAPSHOT"
 val upickleV = "1.2.0"
 val utestV = "0.7.4"
 val scalaJsDomV = "1.0.0"
-val specs2V = "4.8.0"
+val specs2V = "4.8.3"
 
 lazy val root =
   project.in(file("."))
@@ -31,8 +31,8 @@ lazy val backend =
     .settings(commonSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-stream" % akkaV,
-        "com.typesafe.akka" %% "akka-http" % akkaHttpV,
+        "org.apache.pekko" %% "pekko-stream" % pekkoV,
+        "org.apache.pekko" %% "pekko-http" % pekkoHttpV,
         "org.specs2" %% "specs2-core" % specs2V % "test",
         "com.lihaoyi" %% "upickle" % upickleV
       ),
@@ -49,8 +49,8 @@ lazy val cli =
     .settings(commonSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "com.typesafe.akka" %% "akka-stream" % akkaV,
-        "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
+        "org.apache.pekko" %% "pekko-stream" % pekkoV,
+        "org.apache.pekko" %% "pekko-http-core" % pekkoHttpV,
         "org.specs2" %% "specs2-core" % specs2V % "test",
         "com.lihaoyi" %% "upickle" % upickleV
       ),
@@ -73,5 +73,5 @@ lazy val sharedJs= shared.js
 def commonSettings = Seq(
   scalaVersion := scalaV,
   scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-unchecked", "-Xlint"),
-  resolvers += "staging" at "https://dl.bintray.com/akka/maven"
+  resolvers += "apache snapshots" at "https://repository.apache.org/content/repositories/snapshots/"
 )
