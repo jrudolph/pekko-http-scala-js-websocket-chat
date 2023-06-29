@@ -1,6 +1,7 @@
-val pekkoHttpV = "0.0.0+4295-b475736f-SNAPSHOT"
 val scalaV = "2.13.10"
-val pekkoV = "0.0.0+26598-de1a5e3b-SNAPSHOT"
+val pekkoV = "1.0.0-RC2"
+val pekkoHttpV = "0.0.0+4450-e9350d52-SNAPSHOT"
+
 val upickleV = "1.2.0"
 val utestV = "0.7.4"
 val scalaJsDomV = "1.0.0"
@@ -73,5 +74,6 @@ lazy val sharedJs= shared.js
 def commonSettings = Seq(
   scalaVersion := scalaV,
   scalacOptions ++= Seq("-deprecation", "-feature", "-encoding", "utf8", "-unchecked", "-Xlint"),
-  resolvers += "apache snapshots" at "https://repository.apache.org/content/repositories/snapshots/"
+  resolvers += "Apache Nexus Snapshots".at("https://repository.apache.org/content/repositories/snapshots/"),
+  resolvers += "Apache Nexus Staging".at("https://repository.apache.org/content/repositories/staging/"),
 )
