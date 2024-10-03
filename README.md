@@ -9,7 +9,7 @@ To run:
 sbt
 
 > project backend
-> re-start
+> reStart
 ```
 
 Navigate to [http://localhost:8080/](http://localhost:8080/).
