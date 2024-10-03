@@ -50,7 +50,7 @@ sbt
 Run
 
 ```
-java -jar cli/target/scala-2.11/cli-assembly-0.1-SNAPSHOT.jar
+java -jar cli/target/cli.jar
 ```
 
 or 
