@@ -9,8 +9,8 @@ object Formatting extends AutoPlugin {
   override def projectSettings: Seq[_root_.sbt.Def.Setting[_]] = formatSettings
 
   lazy val formatSettings = Seq(
-    ScalariformKeys.preferences in Compile := formattingPreferences,
-    ScalariformKeys.preferences in Test := formattingPreferences
+    Compile / ScalariformKeys.preferences := formattingPreferences,
+    Test / ScalariformKeys.preferences := formattingPreferences
   )
 
   import scalariform.formatter.preferences._

@@ -1,11 +1,11 @@
-val scalaV = "2.13.10"
-val pekkoV = "1.0.0-RC2"
-val pekkoHttpV = "0.0.0+4450-e9350d52-SNAPSHOT"
+val scalaV = "3.3.4"
+val pekkoV = "1.1.1"
+val pekkoHttpV = "1.1.0"
 
-val upickleV = "1.2.0"
-val utestV = "0.7.4"
-val scalaJsDomV = "1.0.0"
-val specs2V = "4.8.3"
+val upickleV = "4.0.2"
+val utestV = "0.8.4"
+val scalaJsDomV = "2.8.0"
+val specs2V = "5.5.3"
 
 lazy val root =
   project.in(file("."))
@@ -37,11 +37,11 @@ lazy val backend =
         "org.specs2" %% "specs2-core" % specs2V % "test",
         "com.lihaoyi" %% "upickle" % upickleV
       ),
-      resourceGenerators in Compile += Def.task {
-        val f1 = (fastOptJS in Compile in frontend).value.data
+      Compile / resourceGenerators += Def.task {
+        val f1 = (frontend / Compile / fastOptJS).value.data
         Seq(f1, new File(f1.getPath+".map"))
       }.taskValue,
-      watchSources ++= (watchSources in frontend).value
+      watchSources ++= (frontend / watchSources).value
     )
     .dependsOn(sharedJvm)
 
@@ -55,8 +55,9 @@ lazy val cli =
         "org.specs2" %% "specs2-core" % specs2V % "test",
         "com.lihaoyi" %% "upickle" % upickleV
       ),
-      fork in run := true,
-      connectInput in run := true
+      run / fork := true,
+      run / connectInput := true,
+      assemblyJarName := "../cli.jar"
     )
     .dependsOn(sharedJvm)
 

@@ -8,9 +8,9 @@ object Protocol {
 
   import upickle.default._
   implicit val messageRW: ReadWriter[Message] = {
-    implicit val cmRW = macroRW[ChatMessage]
-    implicit val jRW = macroRW[Joined]
-    implicit val lRW = macroRW[Left]
+    implicit val cmRW: ReadWriter[ChatMessage] = macroRW[ChatMessage]
+    implicit val jRW: ReadWriter[Joined] = macroRW[Joined]
+    implicit val lRW: ReadWriter[Left] = macroRW[Left]
 
     macroRW[Message]
   }

@@ -6,7 +6,7 @@ import org.apache.pekko.http.scaladsl.Http
 import scala.util.{ Failure, Success }
 
 object ChatBackendMain extends App {
-  implicit val system = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()
   import system.dispatcher
 
   val config = system.settings.config

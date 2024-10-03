@@ -20,7 +20,7 @@ object ChatCLI extends App {
 
   val endpoint = Uri(endpointBase).withQuery(Uri.Query("name" -> name))
 
-  implicit val system = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()
   import system.dispatcher
 
   import Console._
